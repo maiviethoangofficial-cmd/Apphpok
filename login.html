@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+    <title>HPOK - ĐĂNG NHẬP TÀI KHOẢN</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
+    <style>
+        :root { 
+            --pink: #ff2d55; 
+            --gold: linear-gradient(135deg, #ffe1a8 0%, #d4af37 50%, #b8860b 100%);
+            --glass: rgba(255, 255, 255, 0.08);
+            --bg-dark: #050505;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            margin: 0; font-family: 'Lexend', sans-serif; background: var(--bg-dark); 
+            color: #fff; overflow-x: hidden; display: flex; justify-content: center;
+        }
+        
+        /* Hiệu ứng nền Aura sang trọng */
+        .bg-aura { 
+            position: fixed; width: 100%; height: 100%; z-index: -1; 
+            background: radial-gradient(circle at 50% 110%, #4a152b 0%, #050505 100%); 
+        }
+
+        .container { 
+            width: 100%; max-width: 450px; min-height: 100vh; padding: 20px; 
+            display: flex; flex-direction: column; 
+        }
+
+        /* Header Giới thiệu HPOK Hải Phòng */
+        .intro-header { text-align: center; padding: 40px 0 20px; animation: fadeInDown 1s ease; }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .logo-login { 
+            font-size: 70px; font-weight: 900; background: var(--gold); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+            margin: 0; letter-spacing: -4px; filter: drop-shadow(0 0 15px rgba(212,175,55,0.3)); 
+        }
+        .welcome-msg { font-size: 14px; color: #fff; font-weight: 800; letter-spacing: 2px; margin-top: 10px; text-transform: uppercase; }
+        .welcome-sub { font-size: 10px; color: #666; letter-spacing: 1px; margin-top: 5px; }
+
+        /* Auth Card */
+        .auth-card { 
+            background: var(--glass); backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 40px; padding: 35px 25px; box-shadow: 0 40px 100px rgba(0,0,0,0.8); margin-top: 20px; 
+        }
+        .tabs { display: flex; background: rgba(0,0,0,0.5); border-radius: 20px; padding: 5px; margin-bottom: 30px; border: 1px solid #333; }
+        .tab { flex: 1; text-align: center; padding: 14px; border-radius: 15px; font-weight: 800; color: #555; text-decoration: none; font-size: 14px; transition: 0.3s; }
+        .tab.active { background: var(--gold); color: #000; box-shadow: 0 10px 20px rgba(184,134,11,0.3); }
+
+        /* Input Fields */
+        .field-group { margin-bottom: 18px; }
+        .field-label { font-size: 11px; color: #888; font-weight: 700; margin-left: 15px; margin-bottom: 8px; display: block; text-transform: uppercase; }
+        .input-box { background: rgba(0,0,0,0.6); border: 1.5px solid #222; border-radius: 20px; display: flex; align-items: center; padding: 0 20px; transition: 0.3s; }
+        .input-box:focus-within { border-color: var(--pink); box-shadow: 0 0 15px rgba(255,45,85,0.2); }
+        .input-box i { color: var(--pink); font-size: 18px; width: 30px; }
+        .input-box input { background: none; border: none; padding: 18px 5px; color: #fff; width: 100%; outline: none; font-size: 16px; }
+
+        .btn-login { 
+            width: 100%; padding: 20px; border-radius: 22px; border: none; 
+            background: var(--gold); color: #000; font-weight: 900; font-size: 18px; 
+            text-transform: uppercase; cursor: pointer; transition: 0.3s; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4); margin-top: 10px; 
+        }
+        .btn-login:active { transform: scale(0.96); }
+
+        /* Quên mật khẩu Link */
+        .forgot-link-box { text-align: center; margin-top: 20px; }
+        .forgot-link { color: #555; text-decoration: none; font-size: 12px; font-weight: 700; transition: 0.3s; }
+        .forgot-link:hover { color: var(--pink); }
+
+        /* Nút CSKH Floating dẫn sang cskh.html */
+        .cskh-wrapper { 
+            margin-top: 30px; text-decoration: none; display: flex; align-items: center; 
+            gap: 15px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); 
+            padding: 15px 20px; border-radius: 25px; transition: 0.3s; 
+        }
+        .cskh-wrapper:hover { background: rgba(255,45,85,0.08); border-color: var(--pink); transform: translateY(-3px); }
+        .cskh-pulse { 
+            width: 48px; height: 48px; background: var(--pink); border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; font-size: 22px; 
+            color: #fff; box-shadow: 0 0 20px rgba(255, 45, 85, 0.4); position: relative; 
+        }
+        .cskh-pulse::after { 
+            content: ""; position: absolute; width: 100%; height: 100%; 
+            background: var(--pink); border-radius: 50%; animation: pulse-effect 2s infinite; z-index: -1; 
+        }
+        @keyframes pulse-effect { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(1.8); opacity: 0; } }
+        .cskh-info b { display: block; font-size: 14px; color: #fff; letter-spacing: 0.5px; }
+        .cskh-info span { font-size: 11px; color: #666; }
+
+        /* Tải App Store */
+        .app-section { margin-top: auto; padding: 40px 0 20px; text-align: center; }
+        .app-label { font-size: 11px; color: #ff9eb5; font-weight: 800; letter-spacing: 3px; margin-bottom: 20px; display: block; }
+        .store-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .store-item { 
+            background: #111; border: 1px solid #333; border-radius: 18px; 
+            padding: 12px 15px; display: flex; align-items: center; gap: 12px; 
+            text-decoration: none; color: #fff; transition: 0.3s; 
+        }
+        .store-item i { font-size: 26px; }
+        .store-item.android i { color: #3DDC84; }
+        .store-text-box { text-align: left; }
+        .store-text-box span { font-size: 8px; color: #888; display: block; text-transform: uppercase; }
+        .store-text-box b { font-size: 14px; display: block; }
+    </style>
+</head>
+<body>
+
+    <div class="bg-aura"></div>
+
+    <div class="container">
+        <div class="intro-header">
+            <h1 class="logo-login">HPOK</h1>
+            <div class="welcome-msg">Chào mừng Khách Hàng trở lại</div>
+            <div class="welcome-sub">Đăng Nhập Tài Khoản</div>
+        </div>
+
+        <div class="auth-card">
+            <div class="tabs">
+                <a href="register.html" class="tab">ĐĂNG KÝ</a>
+                <a href="login.html" class="tab active">ĐĂNG NHẬP</a>
+            </div>
+
+            <div class="field-group">
+                <span class="field-label">Tài khoản khách hàng</span>
+                <div class="input-box">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <input type="text" id="logUser" placeholder="Tên đăng nhập">
+                </div>
+            </div>
+
+            <div class="field-group">
+                <span class="field-label">Mật khẩu tài khoản</span>
+                <div class="input-box">
+                    <i class="fa-solid fa-lock-open"></i>
+                    <input type="password" id="logPass" placeholder="Nhập mật khẩu">
+                </div>
+            </div>
+
+            <button class="btn-login" onclick="handleLogin()">Đăng nhập tài khoản</button>
+            
+            <div class="forgot-link-box">
+                <a href="forgot-password.html" class="forgot-link">Quên mật khẩu? Click xác minh</a>
+            </div>
+        </div>
+
+        <a href="cskh.html" class="cskh-wrapper">
+            <div class="cskh-pulse"><i class="fa-solid fa-headset"></i></div>
+            <div class="cskh-info">
+                <b>TRUNG TÂM HỖ TRỢ HPOK</b>
+                <span>Phục vụ Khách Hàng 24/24 trực tuyến</span>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="margin-left:auto; color:#333;"></i>
+        </a>
+
+        <div class="app-section">
+            <span class="app-label">ỨNG DỤNG DI ĐỘNG HPOK</span>
+            <div class="store-grid">
+                <a href="tai-ios.html" class="store-item ios">
+                    <i class="fa-brands fa-apple"></i>
+                    <div class="store-text-box"><span>Tải trên</span><b>App Store</b></div>
+                </a>
+                <a href="tai-android.html" class="store-item android">
+                    <i class="fa-brands fa-google-play"></i>
+                    <div class="store-text-box"><span>Tải trên</span><b>Google Play</b></div>
+                </a>
+            </div>
+            <p style="font-size: 10px; color:#444; margin-top: 25px;">Phiên bản v4.2.0 - Bảo mật bởi HPOK Group</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBD27MYenkjWOEjqj0hCisbh_61F_6bhSE", 
+            authDomain: "hpok-d355c.firebaseapp.com", 
+            databaseURL: "https://hpok-d355c-default-rtdb.asia-southeast1.firebasedatabase.app", 
+            projectId: "hpok-d355c" 
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window.handleLogin = async () => {
+            const user = document.getElementById('logUser').value.trim();
+            const pass = document.getElementById('logPass').value;
+
+            if(!user || !pass) return showToast("Vui lòng điền đủ thông tin!");
+
+            try {
+                const snap = await get(ref(db, 'users/' + user));
+                if(snap.exists() && snap.val().password === pass) {
+                    showToast("Đang truy cập sảnh VIP...", "success");
+                    localStorage.setItem("username", user);
+                    setTimeout(() => window.location.href = "home.html", 1000);
+                } else {
+                    showToast("Tài khoản hoặc mật khẩu không chính xác!");
+                }
+            } catch (err) { 
+                showToast("Lỗi kết nối máy chủ!"); 
+            }
+        };
+
+        function showToast(m, t="error") {
+            Toastify({ 
+                text: m, gravity: "top", position: "center", 
+                style: { background: t === "success" ? "#00b09b" : "#ff2d55", fontWeight: "bold" } 
+            }).showToast();
+        }
+    </script>
+</body>
+</html>

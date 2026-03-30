@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+    <title>HPOK - ĐĂNG KÝ TÀI KHOẢN</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
+    <style>
+        :root { 
+            --pink: #ff2d55; 
+            --gold: linear-gradient(135deg, #ffe1a8 0%, #d4af37 50%, #b8860b 100%);
+            --glass: rgba(255, 255, 255, 0.08);
+            --bg-dark: #050505;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            margin: 0; font-family: 'Lexend', sans-serif; background: var(--bg-dark); 
+            color: #fff; overflow-x: hidden; display: flex; justify-content: center;
+        }
+        
+        /* Nền Aura chuyển động nhẹ */
+        .bg-aura { 
+            position: fixed; width: 100%; height: 100%; z-index: -1; 
+            background: radial-gradient(circle at 50% -20%, #4a152b 0%, #050505 100%); 
+        }
+
+        .container { 
+            width: 100%; max-width: 450px; min-height: 100vh; padding: 20px; 
+            display: flex; flex-direction: column; 
+        }
+
+        /* Header */
+        .intro-header { text-align: center; padding: 20px 0 10px; animation: fadeInDown 1s ease; }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .logo-main { 
+            font-size: 65px; font-weight: 900; background: var(--gold); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+            margin: 0; letter-spacing: -3px; filter: drop-shadow(0 0 15px rgba(212,175,55,0.3)); 
+        }
+        .sub-logo { font-size: 10px; color: #ff9eb5; letter-spacing: 3px; font-weight: 800; text-transform: uppercase; margin-top: 5px; }
+
+        /* Card Đăng ký */
+        .auth-card { 
+            background: var(--glass); backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 35px; padding: 25px; box-shadow: 0 40px 100px rgba(0,0,0,0.8); margin-top: 15px; 
+        }
+        .tabs { display: flex; background: rgba(0,0,0,0.5); border-radius: 15px; padding: 5px; margin-bottom: 20px; border: 1px solid #333; }
+        .tab { flex: 1; text-align: center; padding: 12px; border-radius: 12px; font-weight: 800; color: #555; text-decoration: none; font-size: 13px; transition: 0.3s; }
+        .tab.active { background: var(--gold); color: #000; box-shadow: 0 5px 15px rgba(212,175,55,0.3); }
+
+        /* Input Fields */
+        .field-group { margin-bottom: 15px; }
+        .field-label { font-size: 10px; color: #888; font-weight: 700; margin-left: 12px; margin-bottom: 6px; display: block; text-transform: uppercase; }
+        .input-box { background: rgba(0,0,0,0.6); border: 1.5px solid #222; border-radius: 18px; display: flex; align-items: center; padding: 0 18px; transition: 0.3s; }
+        .input-box:focus-within { border-color: var(--pink); box-shadow: 0 0 15px rgba(255,45,85,0.2); }
+        .input-box i { color: var(--pink); font-size: 16px; width: 25px; }
+        .input-box input { background: none; border: none; padding: 16px 5px; color: #fff; width: 100%; outline: none; font-size: 15px; }
+
+        /* Tự động viết hoa cho Họ Tên */
+        #regFullName { text-transform: uppercase; }
+        #regFullName::placeholder { text-transform: none; }
+
+        .btn-register { 
+            width: 100%; padding: 20px; border-radius: 20px; border: none; 
+            background: var(--gold); color: #000; font-weight: 900; font-size: 17px; 
+            text-transform: uppercase; cursor: pointer; transition: 0.3s; 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4); margin-top: 10px; 
+        }
+        .btn-register:active { transform: scale(0.96); }
+
+        /* Hỗ trợ & Link */
+        .cskh-mini { 
+            margin-top: 25px; text-decoration: none; display: flex; align-items: center; 
+            gap: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); 
+            padding: 15px; border-radius: 20px; 
+        }
+        .cskh-icon { width: 40px; height: 40px; background: var(--pink); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 0 15px rgba(255,45,85,0.3); }
+        .cskh-text b { display: block; font-size: 13px; color: #fff; }
+        .cskh-text span { font-size: 10px; color: #666; }
+
+        .footer-text { text-align: center; color: #444; font-size: 10px; margin-top: auto; padding: 20px 0; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+    <div class="bg-aura"></div>
+
+    <div class="container">
+        <div class="intro-header">
+            <h1 class="logo-main">HPOK</h1>
+            <div class="sub-logo">Đăng Ký Tài Khoản</div>
+        </div>
+
+        <div class="auth-card">
+            <div class="tabs">
+                <a href="register.html" class="tab active">ĐĂNG KÝ</a>
+                <a href="login.html" class="tab">ĐĂNG NHẬP</a>
+            </div>
+
+            <div class="field-group">
+                <span class="field-label">Họ và tên thật (Trùng thẻ ngân hàng)</span>
+                <div class="input-box">
+                    <i class="fa-solid fa-address-card"></i>
+                    <input type="text" id="regFullName" placeholder="VÍ DỤ: NGUYEN VAN A" oninput="this.value = this.value.toUpperCase()">
+                </div>
+            </div>
+
+            <div class="field-group">
+                <span class="field-label">Tên tài khoản</span>
+                <div class="input-box">
+                    <i class="fa-solid fa-user-ninja"></i>
+                    <input type="text" id="regUser" placeholder="Nhập tên đăng nhập">
+                </div>
+            </div>
+
+            <div class="field-group">
+                <span class="field-label">Mật khẩu đăng nhập</span>
+                <div class="input-box">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="regPass" placeholder="Tối thiểu 6 ký tự">
+                </div>
+            </div>
+
+            <div class="field-group">
+                <span class="field-label">Nhập lại mật khẩu</span>
+                <div class="input-box">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="regConfirmPass" placeholder="Xác nhận lại mật khẩu">
+                </div>
+            </div>
+
+            <div class="field-group">
+                <span class="field-label">Số điện thoại Zalo</span>
+                <div class="input-box">
+                    <i class="fa-solid fa-phone"></i>
+                    <input type="number" id="regPhone" placeholder="Nhận mã KM qua Zalo">
+                </div>
+            </div>
+
+            <button class="btn-register" onclick="handleRegister()">Kích hoạt tài khoản</button>
+        </div>
+
+        <a href="cskh.html" class="cskh-mini">
+            <div class="cskh-icon"><i class="fa-solid fa-headset"></i></div>
+            <div class="cskh-text">
+                <b>HỖ TRỢ KHÁCH HÀNG 24/24</b>
+                <span>Gặp lỗi đăng ký? Chat với CSKH ngay</span>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="margin-left:auto; color:#333;"></i>
+        </a>
+
+        <div class="footer-text">HPOK ONLINE KING GROUP © 2026</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBD27MYenkjWOEjqj0hCisbh_61F_6bhSE", 
+            authDomain: "hpok-d355c.firebaseapp.com", 
+            databaseURL: "https://hpok-d355c-default-rtdb.asia-southeast1.firebasedatabase.app", 
+            projectId: "hpok-d355c" 
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window.handleRegister = async () => {
+            const fullName = document.getElementById('regFullName').value.trim().toUpperCase();
+            const user = document.getElementById('regUser').value.trim();
+            const pass = document.getElementById('regPass').value;
+            const confirmPass = document.getElementById('regConfirmPass').value;
+            const phone = document.getElementById('regPhone').value.trim();
+
+            if(!fullName || !user || !pass || !confirmPass || !phone) {
+                return showToast("Vui lòng điền đầy đủ thông tin!");
+            }
+            
+            if(pass !== confirmPass) {
+                return showToast("Mật khẩu xác nhận không khớp!");
+            }
+
+            if(pass.length < 6) {
+                return showToast("Mật khẩu phải từ 6 ký tự!");
+            }
+
+            try {
+                // Kiểm tra trùng tài khoản
+                const snap = await get(ref(db, 'users/' + user));
+                if(snap.exists()) {
+                    return showToast("Tên tài khoản này đã được sử dụng!");
+                }
+                
+                // Lưu vào Firebase
+                await set(ref(db, 'users/' + user), {
+                    fullName: fullName,
+                    password: pass,
+                    phone: phone,
+                    balance: 88000, // Tặng vốn tân thủ
+                    createAt: new Date().toISOString()
+                });
+
+                showToast("Đăng ký thành công! Chào " + fullName, "success");
+                localStorage.setItem("username", user);
+                setTimeout(() => window.location.href = "home.html", 1500);
+
+            } catch (err) {
+                showToast("Lỗi hệ thống, vui lòng thử lại!");
+            }
+        };
+
+        function showToast(m, t="error") {
+            Toastify({ 
+                text: m, gravity: "top", position: "center", 
+                style: { background: t === "success" ? "#00b09b" : "#ff2d55", fontWeight: "bold", borderRadius: "12px" } 
+            }).showToast();
+        }
+    </script>
+</body>
+</html>

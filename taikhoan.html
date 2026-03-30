@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+    <title>Cá Nhân - HPOK VIP</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --hpok-pink: #ff007f; 
+            --hpok-glow: rgba(255, 0, 127, 0.4);
+            --bg-dark: #121212; 
+            --card-gray: #252525; 
+            --danger: #ff4444;
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { margin: 0; font-family: 'Lexend', sans-serif; background: #000; color: #fff; padding-bottom: 110px; }
+
+        header { 
+            background: linear-gradient(135deg, #222, #000); 
+            padding: 18px; text-align: center; border-bottom: 2px solid var(--hpok-pink);
+            box-shadow: 0 0 15px var(--hpok-glow);
+        }
+        .logo-hpok { font-size: 24px; font-weight: 900; letter-spacing: 2px; }
+        .logo-hpok span { color: var(--hpok-pink); text-shadow: 0 0 10px var(--hpok-pink); }
+
+        .marquee-hpok { background: #1a1a1a; color: var(--hpok-pink); font-size: 11px; padding: 10px 12px; border-bottom: 1px solid #333; display: flex; align-items: center; gap: 10px; }
+
+        .user-top { padding: 15px 20px; color: #888; font-size: 13px; }
+        .user-name { color: #fff; font-size: 18px; font-weight: 900; text-transform: uppercase; }
+
+        /* KHỐI SỐ DƯ CHÍNH */
+        .balance-card { 
+            margin: 10px 15px; background: #1a1a1a; border: 1.5px solid var(--hpok-pink); 
+            border-radius: 20px; padding: 20px; position: relative;
+            box-shadow: inset 0 0 15px var(--hpok-glow);
+        }
+        .bal-value { font-size: 32px; font-weight: 900; color: #fff; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; }
+        .bal-unit { font-size: 16px; color: var(--hpok-pink); font-weight: 700; display: flex; align-items: center; gap: 10px; }
+
+        .btn-group-hpok { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .btn-main { padding: 14px; border-radius: 12px; border: none; font-weight: 900; color: #fff; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; text-decoration: none; }
+        .btn-nap { background: var(--hpok-pink); box-shadow: 0 5px 15px var(--hpok-glow); }
+        .btn-rut { background: #fff; color: #000; }
+
+        /* KHỐI THANH CƯỢC RIÊNG BIỆT (PREMIUM) */
+        .wager-standalone {
+            margin: 15px; background: var(--card-gray); border-radius: 15px; padding: 15px;
+            border: 1px solid #333;
+        }
+        .wager-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .wager-title { font-size: 12px; font-weight: 700; color: #eee; display: flex; align-items: center; gap: 8px; }
+        .wager-title i { color: var(--hpok-pink); }
+        .wager-percent { font-size: 12px; font-weight: 900; color: var(--hpok-pink); }
+        
+        .wager-bar-bg { height: 10px; background: #111; border-radius: 20px; overflow: hidden; border: 1px solid #333; }
+        .wager-bar-fill { height: 100%; background: linear-gradient(90deg, #ff007f, #ff66b2); width: 0%; transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 0 10px var(--hpok-glow); }
+        
+        .wager-footer { display: flex; justify-content: space-between; font-size: 11px; color: #666; margin-top: 8px; font-weight: 500; }
+        .wager-footer b { color: #fff; }
+
+        /* GRID CHỨC NĂNG 3x3 */
+        .grid-hpok { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 10px 15px 25px; }
+        .grid-item { 
+            background: var(--card-gray); border-radius: 18px; padding: 22px 5px; 
+            text-align: center; text-decoration: none; color: #fff; position: relative;
+            border: 1.5px solid #333; transition: 0.3s;
+        }
+        .grid-item i { font-size: 28px; color: var(--hpok-pink); display: block; margin-bottom: 12px; }
+        .grid-item span { font-size: 11px; font-weight: 600; display: block; color: #eee; }
+        .badge { position: absolute; top: -5px; right: 12%; background: var(--hpok-pink); color: #fff; font-size: 10px; padding: 3px 8px; border-radius: 10px; border: 2px solid #000; font-weight: 900; }
+
+        /* NÚT ĐĂNG XUẤT */
+        .logout-container { padding: 0 15px 20px; }
+        .logout-btn-premium {
+            width: 100%; padding: 16px; background: linear-gradient(135deg, #1a1a1a, #000);
+            border: 1px solid var(--danger); border-radius: 15px; color: var(--danger);
+            font-size: 14px; font-weight: 900; text-transform: uppercase;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+        }
+
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 500px; height: 75px; background: #fff; display: flex; border-top: 1px solid #eee; z-index: 1000; }
+        .nav-link { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: #bbb; font-size: 11px; font-weight: 700; }
+        .nav-link i { font-size: 24px; margin-bottom: 5px; }
+        .nav-link.active { color: var(--hpok-pink); }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo-hpok">HPOK<span>VIP</span></div>
+</header>
+
+<div class="marquee-hpok">
+    <i class="fa-solid fa-bolt"></i>
+    <marquee scrollamount="6">Chào mừng đến với hệ thống HPOK VIP - Nạp rút tự động 24/7</marquee>
+</div>
+
+<div class="user-top">
+    <div id="timeUTC" style="font-family: monospace; font-size: 11px; color: #555;">20/03/2026 07:49:59 (UTC-4)</div>
+    <div class="user-name" id="usernameDisplay">HOANG</div>
+</div>
+
+<div class="balance-card">
+    <div class="bal-value">
+        <span id="userBal">0.00</span>
+        <div class="bal-unit">VND(k) <i class="fa-solid fa-arrows-rotate" id="refreshBtn"></i></div>
+    </div>
+    <div class="btn-group-hpok">
+        <a href="naptien.html" class="btn-main btn-nap"><i class="fa-solid fa-circle-plus"></i> NẠP TIỀN</a>
+        <a href="ruttien.html" class="btn-main btn-rut"><i class="fa-solid fa-wallet"></i> RÚT TIỀN</a>
+    </div>
+</div>
+
+<div class="wager-standalone">
+    <div class="wager-header">
+        <div class="wager-title"><i class="fa-solid fa-fire-flame-curved"></i> Cược hiệu lực</div>
+        <div class="wager-percent" id="wagerPercent">0%</div>
+    </div>
+    <div class="wager-bar-bg">
+        <div class="wager-bar-fill" id="wagerProgress"></div>
+    </div>
+    <div class="wager-footer">
+        <span>Tiến độ: <b id="wagerCurrent">0k</b></span>
+        <span>Mục tiêu: <b id="wagerTarget">0k</b></span>
+    </div>
+</div>
+
+<div class="grid-hpok">
+    <a href="nhiemvu.html" class="grid-item"><i class="fa-solid fa-medal"></i><span>Nhiệm vụ</span></a>
+    <a href="lichsu.html" class="grid-item"><div class="badge">9+</div><i class="fa-solid fa-gift"></i><span>Vòng quay</span></a>
+    <a href="ruttien.html" class="grid-item"><i class="fa-solid fa-clock-rotate-left"></i><span>Lịch sử cược</span></a>
+    <a href="naptien.html" class="grid-item"><i class="fa-solid fa-arrow-right-arrow-left"></i><span>Chuyển quỹ</span></a>
+    <a href="diemdanh.html" class="grid-item"><i class="fa-solid fa-calendar-check"></i><span>Điểm danh</span></a>
+    <a href="cskh.html" class="grid-item"><i class="fa-solid fa-headset"></i><span>Hỗ trợ 24/7</span></a>
+    <a href="#" class="grid-item"><i class="fa-solid fa-gem"></i><span>Sảnh VIP 777</span></a>
+    <a href="taiapp.html" class="grid-item"><i class="fa-solid fa-mobile-screen-button"></i><span>Tải App HPOK</span></a>
+    <a href="baomat.html" class="grid-item"><i class="fa-solid fa-shield-halved"></i><span>Bảo mật</span></a>
+</div>
+
+<a href="javascript:void(0)" onclick="logout()" class="hpok-btn">
+    <i class="fas fa-power-off"></i><span>Đăng Xuất</span>
+</a>
+    </div>
+</div>
+
+<nav class="bottom-nav">
+    <a href="index.html" class="hpok-btn">
+    <i class="fas fa-home"></i><span>Trang Chủ</span>
+</a>
+
+    <a href="naptien.html" class="nav-link"><i class="fa-solid fa-wallet"></i><span>Nạp tiền</span></a>
+    <a href="uudai.html" class="nav-link"><i class="fa-solid fa-award"></i><span>Ưu đãi</span></a>
+    <a href="cskh.html" class="nav-link"><i class="fa-solid fa-comments"></i><span>CSKH</span></a>
+    <a href="taikhoan.html" class="nav-link active"><i class="fa-solid fa-circle-user"></i><span>Cá nhân</span></a>
+</nav>
+
+<script type="module">
+    // --- 1. Nhập các thư viện Firebase cần thiết ---
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // --- 2. Cấu hình Firebase (Đồng bộ với dự án HPOK-D355C) ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyBD27MYenkjWOEjqj0hCisbh_61F_6bhSE",
+        authDomain: "hpok-d355c.firebaseapp.com",
+        databaseURL: "https://hpok-d355c-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "hpok-d355c",
+        storageBucket: "hpok-d355c.appspot.com",
+        messagingSenderId: "338810246244",
+        appId: "1:338810246244:web:80674516c73855e4e7512d"
+    };
+
+    // Khởi tạo Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // --- 3. Kiểm tra trạng thái đăng nhập ---
+    const currentUser = localStorage.getItem("username");
+
+    if (!currentUser) {
+        // Nếu không tìm thấy username trong bộ nhớ trình duyệt, chuyển hướng về Login
+        window.location.href = "login.html";
+    } else {
+        // --- 4. Lấy dữ liệu Realtime từ Firebase ---
+        // Đường dẫn: users/[tên_đăng_nhập]
+        const userRef = ref(db, 'users/' + currentUser);
+
+        onValue(userRef, (snapshot) => {
+            const data = snapshot.val();
+            
+            if (data) {
+                // Cập nhật Tên hiển thị (FullName từ Firebase)
+                const nameDisplay = document.getElementById('db-user');
+                if (nameDisplay) nameDisplay.innerText = data.fullName || currentUser;
+
+                // Cập nhật Số dư (Format 0.000 VND)
+                const balanceDisplay = document.getElementById('db-balance');
+                if (balanceDisplay) {
+                    const formattedBalance = new Intl.NumberFormat('vi-VN').format(data.balance || 0);
+                    balanceDisplay.innerText = formattedBalance + " VND";
+                }
+
+                // Cập nhật các thông tin phụ nếu có trong HTML (ID, Level, v.v.)
+                const idDisplay = document.querySelector('.user-id') || document.getElementById('user-id');
+                if (idDisplay) idDisplay.innerText = "ID: " + (data.userId || "Chưa cập nhật");
+            } else {
+                console.error("Không tìm thấy dữ liệu cho người dùng này trong Database.");
+            }
+        }, (error) => {
+            console.error("Lỗi khi đọc dữ liệu: ", error);
+        });
+    }
+
+    // --- 5. Hàm Đăng xuất (Logout) ---
+    // Gắn hàm vào đối tượng window để nút bấm HTML có thể gọi được
+    window.logout = function() {
+        if(confirm("Bạn có chắc chắn muốn đăng xuất?")) {
+            localStorage.removeItem("username"); // Xóa session
+            window.location.href = "login.html"; // Về trang đăng nhập
+        }
+    };
+
+</script>
+</body>
+</html>

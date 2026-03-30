@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+    <title>HPOK | VIP INFINITY & HALL OF FAME</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --p: #ff007f; --g: #ffd700; --s: #e0e0e0; --bz: #ff8c00; --dm: #00f2fe;
+            --bg: #030303; --card: rgba(255,255,255,0.03);
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { 
+            margin: 0; font-family: 'Lexend', sans-serif; background: var(--bg); color: #fff; 
+            background-image: radial-gradient(circle at 50% 0%, #300018 0%, #030303 90%);
+            overflow-x: hidden; padding-bottom: 60px;
+        }
+
+        header { 
+            padding: 15px 20px; display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 1000; background: rgba(0,0,0,0.95); backdrop-filter: blur(20px);
+            border-bottom: 2px solid var(--p); box-shadow: 0 5px 20px rgba(255,0,127,0.4);
+        }
+
+        /* --- ĐỒNG HỒ ĐẾM NGƯỢC NEON --- */
+        .timer-container {
+            width: 92%; margin: 20px auto; background: rgba(255,255,255,0.02);
+            border-radius: 20px; padding: 15px; border: 1px solid rgba(255,0,127,0.2);
+            text-align: center;
+        }
+        .timer-label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
+        .countdown-display { display: flex; justify-content: center; gap: 15px; }
+        .time-box { display: flex; flex-direction: column; align-items: center; }
+        .time-box b { font-size: 24px; color: var(--p); text-shadow: 0 0 10px var(--p); }
+        .time-box span { font-size: 9px; color: #555; }
+
+        /* --- THANH TIẾN TRÌNH NẠP (EXP) --- */
+        .exp-section { width: 92%; margin: 0 auto 20px; }
+        .exp-info { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px; color: #ccc; }
+        .exp-bar-bg { width: 100%; height: 8px; background: #111; border-radius: 10px; overflow: hidden; border: 1px solid #222; }
+        .exp-bar-fill { 
+            width: 65%; height: 100%; 
+            background: linear-gradient(90deg, var(--p), var(--g)); 
+            box-shadow: 0 0 10px var(--p);
+            transition: 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* --- PHẦN VINH DANH ĐẠI GIA --- */
+        .hall-of-fame {
+            width: 92%; margin: 20px auto; background: rgba(255,215,0,0.05);
+            border-radius: 20px; padding: 15px; border: 1px solid rgba(255,215,0,0.2);
+            position: relative; overflow: hidden;
+        }
+        .vinh-danh-title { font-size: 12px; font-weight: 900; color: var(--g); text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .vinh-danh-title i { animation: beat 1s infinite; }
+        @keyframes beat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+
+        .ticker-wrapper { height: 30px; overflow: hidden; position: relative; }
+        .ticker-item {
+            height: 30px; display: flex; align-items: center; gap: 10px; font-size: 13px;
+            position: absolute; width: 100%; transform: translateY(100%); animation: slideUp 9s infinite;
+        }
+        .ticker-item:nth-child(2) { animation-delay: 3s; }
+        .ticker-item:nth-child(3) { animation-delay: 6s; }
+
+        @keyframes slideUp {
+            0% { transform: translateY(100%); opacity: 0; }
+            5% { transform: translateY(0); opacity: 1; }
+            30% { transform: translateY(0); opacity: 1; }
+            35% { transform: translateY(-100%); opacity: 0; }
+            100% { transform: translateY(-100%); opacity: 0; }
+        }
+
+        .user-vip { font-weight: 900; color: #fff; }
+        .badge-vip { padding: 2px 8px; border-radius: 5px; font-size: 10px; font-weight: 900; }
+        
+        /* --- NỘI DUNG ƯU ĐÃI --- */
+        .section-h { width: 92%; margin: 30px auto 15px; font-weight: 900; font-size: 18px; color: var(--p); display: flex; align-items: center; gap: 10px; }
+        
+        .luxury-card {
+            width: 92%; margin: 0 auto 20px; background: var(--card); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 25px; padding: 25px; position: relative; overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: 0.3s;
+        }
+        .luxury-card:active { transform: scale(0.98); }
+        .luxury-card.dm { border: 2px solid var(--dm); background: linear-gradient(145deg, #001a20, #030303); }
+        
+        .card-icon { font-size: 35px; margin-bottom: 15px; display: block; filter: drop-shadow(0 0 10px currentColor); }
+        
+        .benefit-list { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .b-item { font-size: 11px; color: #888; display: flex; flex-direction: column; }
+        .b-item b { color: #fff; font-size: 14px; margin-top: 2px; }
+
+        /* Bảng tổng hợp siêu chi tiết */
+        .scroll-table { width: 92%; margin: 20px auto; overflow-x: auto; border-radius: 20px; background: #0a0a0a; border: 1px solid #1a1a1a; }
+        table { width: 180%; border-collapse: collapse; font-size: 12px; }
+        th { background: #151515; padding: 15px; color: #555; text-align: left; }
+        td { padding: 15px; border-bottom: 1px solid #111; font-weight: 700; }
+        .col-head { position: sticky; left: 0; background: #0d0d0d; width: 120px; color: var(--p); }
+
+        .btn-action {
+            width: 92%; margin: 20px auto; display: block; padding: 18px; border-radius: 20px;
+            border: none; background: var(--p); color: #fff; font-weight: 900; font-size: 15px;
+            box-shadow: 0 10px 25px rgba(255,0,127,0.4); text-transform: uppercase;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="vongquay.html" style="color:#fff; font-size: 24px;"><i class="fa-solid fa-chevron-left"></i></a>
+    <div style="font-weight:900; letter-spacing: 1px;">TRUNG TÂM <span style="color:var(--p)">VIP</span></div>
+    <div style="color:var(--g); font-size: 20px;"><i class="fa-solid fa-gem"></i></div>
+</header>
+
+<div class="timer-container">
+    <div class="timer-label">Reset ưu đãi đặc biệt sau</div>
+    <div class="countdown-display">
+        <div class="time-box"><b id="hh">00</b><span>Giờ</span></div>
+        <div class="time-box"><b id="mm">00</b><span>Phút</span></div>
+        <div class="time-box"><b id="ss">00</b><span>Giây</span></div>
+    </div>
+</div>
+
+<div class="exp-section">
+    <div class="exp-info">
+        <span>Tiến độ lên hạng <b style="color:var(--g)">SILVER</b></span>
+        <span><b style="color:#fff">650k</b> / 1.000k</span>
+    </div>
+    <div class="exp-bar-bg">
+        <div class="exp-bar-fill"></div>
+    </div>
+</div>
+
+<div class="hall-of-fame">
+    <div class="vinh-danh-title"><i class="fa-solid fa-trophy"></i> Vinh danh đại gia Hải Phòng</div>
+    <div class="ticker-wrapper">
+        <div class="ticker-item">
+            <span class="badge-vip" style="background:var(--dm); color:#000;">DIAMOND</span>
+            <span class="user-vip">AnhTu***88</span> <span>vừa thăng hạng!</span>
+        </div>
+        <div class="ticker-item">
+            <span class="badge-vip" style="background:var(--g); color:#000;">GOLD</span>
+            <span class="user-vip">Hungga***HP</span> <span>vừa thăng hạng!</span>
+        </div>
+        <div class="ticker-item">
+            <span class="badge-vip" style="background:var(--dm); color:#000;">DIAMOND</span>
+            <span class="user-vip">Minh_***P_Ok</span> <span>vừa thăng hạng!</span>
+        </div>
+    </div>
+</div>
+
+<div class="section-h">CHI TIẾT ĐẶC QUYỀN HẠNG</div>
+
+<div class="luxury-card">
+    <i class="fa-solid fa-medal card-icon" style="color:var(--s)"></i>
+    <h3 style="margin:0">HỘI VIÊN BẠC (SILVER)</h3>
+    <div class="benefit-list">
+        <div class="b-item">Hoàn trả ngày <b>0.8%</b></div>
+        <div class="b-item">Thưởng thăng hạng <b>200,000đ</b></div>
+        <div class="b-item">Lượt quay/ngày <b>03 Lượt</b></div>
+        <div class="b-item">Rút tiền tối đa <b>50 Triệu</b></div>
+    </div>
+</div>
+
+<div class="luxury-card">
+    <i class="fa-solid fa-crown card-icon" style="color:var(--g)"></i>
+    <h3 style="margin:0">HỘI VIÊN VÀNG (GOLD)</h3>
+    <div class="benefit-list">
+        <div class="b-item">Hoàn trả ngày <b>1.5%</b></div>
+        <div class="b-item">Thưởng thăng hạng <b>1,000,000đ</b></div>
+        <div class="b-item">Lượt quay/ngày <b>05 Lượt</b></div>
+        <div class="b-item">Hỗ trợ riêng <b>Hotline VIP</b></div>
+    </div>
+</div>
+
+<div class="luxury-card dm">
+    <i class="fa-solid fa-gem card-icon" style="color:var(--dm)"></i>
+    <h3 style="margin:0; color:var(--dm)">HỘI VIÊN KIM CƯƠNG</h3>
+    <div class="benefit-list">
+        <div class="b-item">Hoàn trả ngày <b style="color:var(--dm)">2.5%</b></div>
+        <div class="b-item">Thưởng thăng hạng <b style="color:var(--dm)">5,000,000đ</b></div>
+        <div class="b-item">Rút tiền 30s <b style="color:var(--dm)">KHÔNG GIỚI HẠN</b></div>
+        <div class="b-item">Quà tặng hiện vật <b style="color:var(--dm)">iPhone 16 Pro</b></div>
+    </div>
+</div>
+
+<div class="section-h">SO SÁNH TẤT CẢ ƯU ĐÃI</div>
+
+<div class="scroll-table">
+    <table>
+        <thead>
+            <tr>
+                <th class="col-head">Quyền lợi</th>
+                <th style="color:var(--bz)">Bronze</th>
+                <th style="color:var(--s)">Silver</th>
+                <th style="color:var(--g)">Gold</th>
+                <th style="color:var(--dm)">Diamond</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td class="col-head">Tích lũy nạp</td><td>0đ</td><td>1M</td><td>10M</td><td>50M</td></tr>
+            <tr><td class="col-head">Hoàn trả</td><td>0.2%</td><td>0.8%</td><td>1.5%</td><td>2.5%</td></tr>
+            <tr><td class="col-head">Thưởng thăng hạng</td><td>50k</td><td>200k</td><td>1M</td><td>5M</td></tr>
+            <tr><td class="col-head">Quà sinh nhật</td><td>-</td><td>100k</td><td>500k</td><td>2M</td></tr>
+            <tr><td class="col-head">Lượt quay/ngày</td><td>1</td><td>3</td><td>5</td><td>15</td></tr>
+            <tr><td class="col-head">Rút tiền tối đa</td><td>10M</td><td>50M</td><td>200M</td><td>VÔ TẬN</td></tr>
+            <tr><td class="col-head">Bảo hiểm thua</td><td>-</td><td>-</td><td>5%</td><td>10%</td></tr>
+            <tr><td class="col-head">Tặng iPhone</td><td>-</td><td>-</td><td>-</td><td>✅</td></tr>
+            <tr><td class="col-head">Trợ lý riêng</td><td>-</td><td>-</td><td>-</td><td>✅</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<button class="btn-action" onclick="location.href='naptien.html'">Nâng cấp hạng ngay</button>
+
+<script>
+    // Logic Đếm Ngược (Countdown) đến cuối ngày
+    function updateCountdown() {
+        const now = new Date();
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 59, 59, 999);
+
+        let diff = endOfDay - now;
+
+        let hh = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        let mm = Math.floor((diff / (1000 * 60)) % 60);
+        let ss = Math.floor((diff / 1000) % 60);
+
+        document.getElementById('hh').innerText = hh < 10 ? '0' + hh : hh;
+        document.getElementById('mm').innerText = mm < 10 ? '0' + mm : mm;
+        document.getElementById('ss').innerText = ss < 10 ? '0' + ss : ss;
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+</script>
+
+</body>
+</html>

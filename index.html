@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+<title>HPOK OFFICIAL VIP</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+/* ===== CẤU HÌNH CHUNG ===== */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    background: #0b0b0b;
+    color: #fff;
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
+}
+
+/* ===== HEADER ===== */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background: #000;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid #222;
+}
+
+/* Link cho nút Menu ba gạch */
+.menu-link { text-decoration: none; display: flex; align-items: center; }
+.menu-btn { font-size: 20px; color: #ff2d55; cursor: pointer; }
+
+.logo {
+    font-size: 22px;
+    font-weight: 900;
+    background: linear-gradient(90deg, #ff2d55, #fff, #ff2d55);
+    background-size: 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 3s linear infinite;
+}
+@keyframes shine { 0%{background-position:-200%} 100%{background-position:200%} }
+
+.btn-app {
+    background: linear-gradient(145deg, #ff2d55, #ff6a88);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    color: #fff;
+    text-decoration: none;
+    box-shadow: 0 0 10px rgba(255, 45, 85, 0.5);
+}
+
+/* ===== BANNER SLIDER ===== */
+.slider-container { width: 100%; position: relative; overflow: hidden; border-bottom: 2px solid #333; background: #000; }
+.slides { display: flex; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); width: 100%; }
+.slides img { width: 100%; flex-shrink: 0; height: 190px; object-fit: fill; display: block; }
+.dots { text-align: center; position: absolute; bottom: 12px; width: 100%; z-index: 5; }
+.dot { height: 5px; width: 5px; background: rgba(255, 255, 255, 0.5); margin: 0 4px; border-radius: 50%; display: inline-block; transition: all 0.3s ease; }
+.dot.active { background: #ff2d55; width: 18px; border-radius: 10px; box-shadow: 0 0 8px #ff2d55; }
+
+/* ===== TIN TỨC ===== */
+.news { background: #1a1a1a; padding: 10px; display: flex; align-items: center; font-size: 12px; color: #ffca28; border-bottom: 1px solid #333; }
+.news i { margin-right: 8px; font-size: 14px; }
+.news-scroll { overflow: hidden; white-space: nowrap; flex: 1; }
+.news-scroll span { display: inline-block; animation: run 15s linear infinite; }
+@keyframes run { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+/* ===== THANH AUTH ===== */
+.auth-bar { margin: 20px 10px; position: relative; height: 55px; display: flex; justify-content: center; align-items: center; gap: 15px; }
+.auth-btn { flex: 1; height: 100%; border-radius: 30px; text-decoration: none; color: #fff; font-weight: 900; font-size: 16px; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.5); border: 2px solid transparent; }
+.auth-register { background: linear-gradient(145deg, #ff1a1a, #800000); border-color: #ff4d4d; }
+.auth-login { background: linear-gradient(145deg, #ffd700, #b8860b); color: #333; border-color: #fff; }
+.auth-bonus { position: absolute; top: -15px; left: 15px; background: #ff9800; padding: 3px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; border: 1px solid #fff; z-index: 3; }
+
+/* ===== MENU TAB HOT ===== */
+
+/* Lắc đĩa (Cho XÓC ĐĨA) */
+@keyframes shakePlate {
+    0%, 100% { transform: scale(1); }
+    20%, 60% { transform: translateX(-3px) rotate(-5deg); }
+    40%, 80% { transform: translateX(3px) rotate(5deg); }
+}
+
+/* Nhảy xí ngầu (Cho TÀI XỈU) */
+@keyframes bounceDice {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px) rotate(45deg); }
+}
+
+/* Rung vé số (Cho XỔ SỐ) */
+@keyframes ticketGlow {
+    0% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.1); filter: brightness(1.3); }
+    100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* --- Áp dụng khi Hover --- */
+
+.menu-item a:hover .XocDia-animated {
+    animation: shakePlate 0.4s infinite;
+}
+
+.menu-item a:hover .TaiXiu-animated {
+    animation: bounceDice 0.5s ease infinite;
+    color: #ffeb3b !important; /* Đổi sang màu vàng khi nhảy */
+}
+
+.menu-item a:hover .XoSo-animated {
+    animation: ticketGlow 0.8s infinite;
+}
+
+/* --- Tối ưu cho Mobile (Khi có nhiều mục) --- */
+.menu-tab {
+    display: flex;
+    overflow-x: auto; /* Cho phép vuốt ngang nếu màn hình quá hẹp */
+    white-space: nowrap;
+    gap: 15px;
+    padding: 15px 10px;
+    background: rgba(0, 0, 0, 0.6); /* Nền tối sang trọng cho app game */
+    backdrop-filter: blur(15px);
+    border-radius: 25px;
+}
+
+.menu-item span {
+    font-size: 9px; /* Nhỏ lại một chút để hiển thị đủ chữ */
+    margin-top: 8px;
+}
+
+/* Các mục menu con */
+.menu-item a {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px;
+    border-radius: 15px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Hiệu ứng đàn hồi */
+}
+
+/* Hiệu ứng khi di chuột (Hover) */
+.menu-item a:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.1); /* Phóng to nhẹ */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Hiệu ứng Icon sáng lên */
+.menu-item i {
+    font-size: 26px;
+    margin-bottom: 6px;
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.2)); /* Đổ bóng riêng cho icon */
+}
+
+/* Hiệu ứng chữ */
+.menu-item span {
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff; /* Chữ trắng để nổi trên nền mờ */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ===== GAMES & HOT TAG ===== */
+.games { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 10px; margin-bottom: 90px; }
+.game { position: relative; border-radius: 12px; overflow: hidden; background: #1a1a1a; border: 1px solid #333; }
+.game img { width: 100%; display: block; }
+
+/* Nhãn HOT Động */
+.hot-tag {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: linear-gradient(to bottom, #ff0000, #ff8c00);
+    color: white;
+    font-size: 9px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 5px;
+    z-index: 10;
+    text-transform: uppercase;
+    animation: pulseHot 0.8s infinite alternate;
+    box-shadow: 0 0 8px rgba(255, 0, 0, 0.8);
+}
+
+@keyframes pulseHot {
+    0% { transform: scale(1); opacity: 0.9; }
+    100% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 12px rgba(255, 0, 0, 1); }
+}
+
+/* ===== TAB DƯỚI ===== */
+.bottom { position: fixed; bottom: 0; width: 100%; background: #111; display: flex; justify-content: space-around; padding: 8px 0 12px 0; border-top: 1px solid #222; z-index: 1001; }
+.bottom a { text-decoration: none; color: #888; font-size: 10px; text-align: center; flex: 1; display: flex; flex-direction: column; align-items: center; }
+.bottom i { font-size: 20px; margin-bottom: 4px; }
+.bottom a.active { color: #ff2d55; }
+</style>
+</head>
+
+<body>
+
+<header>
+    <a href="menu.html" class="menu-link">
+        <div class="menu-btn"><i class="fa-solid fa-bars"></i></div>
+    </a>
+    <div class="logo">HPOK VIP</div>
+    <a href="taiapp.html" class="btn-app">TẢI APP</a>
+</header>
+
+<div class="slider-container" id="slider">
+    <div class="slides" id="slides">
+        <img src="https://i.postimg.cc/TY72yWyk/IMG-3695.png" alt="Banner 1">
+        <img src="https://i.postimg.cc/QNn1DVXy/IMG-3697.png" alt="Banner 2">
+    </div>
+    <div class="dots" id="dots"></div>
+</div>
+
+<div class="news">
+    <i class="fa-solid fa-bullhorn"></i>
+    <div class="news-scroll"><span>🔥 Chào mừng bạn đến với HPOK - Uy tín số 1 Việt Nam!</span></div>
+</div>
+
+<div class="auth-bar">
+    <div class="auth-bonus">+88K MIỄN PHÍ</div>
+    <a href="register.html" class="auth-btn auth-register">ĐĂNG KÝ</a>
+    <a href="login.html" class="auth-btn auth-login">ĐĂNG NHẬP</a>
+</div>
+
+<div class="menu-tab">
+    <div class="menu-item">
+        <a href="no-hu.html">
+            <i class="fa-solid fa-clover Clover-animated" style="color:#ff4e50"></i>
+            <span>NỔ HŨ</span>
+        </a>
+    </div>
+
+    <div class="menu-item">
+        <a href="ban-ca.html">
+            <i class="fa-solid fa-fish-fins Fish-animated" style="color:#0072ff"></i>
+            <span>BẮN CÁ</span>
+        </a>
+    </div>
+
+    <div class="menu-item">
+        <a href="bong-da.html">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-futbol Ball-animated" style="color:#ffd700"></i>
+                <span class="live-badge">LIVE</span>
+            </div>
+            <span>BÓNG ĐÁ</span>
+        </a>
+    </div>
+
+    <div class="menu-item">
+        <a href="xoc-dia.html">
+            <i class="fa-solid fa-circle-dot XocDia-animated" style="color:#ffffff"></i>
+            <span>XÓC ĐĨA</span>
+        </a>
+    </div>
+
+    <div class="menu-item">
+        <a href="tai-xiu.html">
+            <i class="fa-solid fa-dice TaiXiu-animated" style="color:#e91e63"></i>
+            <span>TÀI XỈU</span>
+        </a>
+    </div>
+
+    <div class="menu-item">
+        <a href="game-bai.html">
+            <i class="fa-solid fa-id-card Card-animated" style="color:#f5576c"></i>
+            <span>GAME BÀI</span>
+        </a>
+    </div>
+
+    <div class="menu-item">
+        <a href="xo-so.html">
+            <i class="fa-solid fa-ticket XoSo-animated" style="color:#4caf50"></i>
+            <span>XỔ SỐ</span>
+        </a>
+    </div>
+</div>
+
+<div class="games">
+  <div class="game" onclick="location.href='https://nagaimam.xyz/pgsoft/mahjongways'"><div class="hot-tag">Hot</div><img src="https://drive.google.com/thumbnail?id=17Yeaf-mcBIaWZi2VNg6nMsdNSSdUR-0-&sz=w1000"></div>
+    <div class="game" onclick="location.href='https://nagaimam.xyz/pgsoft/mahjongways2'"><div class="hot-tag">Hot</div><img src="https://drive.google.com/thumbnail?id=1U_lNSHEtpsFRx1beq53LUzUqzYi4Nz5J&sz=w1000"></div>
+    <div class="game" onclick="location.href='https://nagaimam.xyz/pgsoft/treasuresofaztec'"><div class="hot-tag">Hot</div><img src="https://drive.google.com/thumbnail?id=10pkvs_IbdqmprzgIhRObUteHKYaRmAXb&sz=w1000"></div>
+    <div class="game" onclick="location.href='https://nagaimam.xyz/pgsoft/mahjongwins2'"><div class="hot-tag">Hot</div><img src="https://drive.google.com/thumbnail?id=1U_lNSHEtpsFRx1beq53LUzUqzYi4Nz5J&sz=w1000"></div>
+    <div class="game" onclick="location.href='https://nagaimam.xyz/pgsoft/wildbountyshowdown'"><div class="hot-tag">Hot</div><img src="https://drive.google.com/thumbnail?id=10pkvs_IbdqmprzgIhRObUteHKYaRmAXb&sz=w1000"></div>
+    <div class="game" onclick="location.href='https://nagaimam.xyz/pgsoft/luckyneko'"><div class="hot-tag">Hot</div><img src="https://drive.google.com/thumbnail?id=1L44JEYCaDpj_avYPeEok4oyFuNkDmb-Y&sz=w1000"></div>
+    <div class="game" onclick="location.href='https://nagaimam.xyz/pgsoft/fortunerabbit'"><div class="hot-tag">Hot</div><img src="https://drive.google.com/thumbnail?id=11upSq5AZD8__-dD8S9tiGJqgrEC068Zc&sz=w1000"></div>
+    <div class="game" onclick="location.href='https://nagaimam.xyz/pgsoft/fortunetiger'"><div class="hot-tag">Hot</div><img src="https://drive.google.com/thumbnail?id=1j7TU3afS_jd0ZVTKmVrFD_mbgHGomsFk&sz=w1000"></div>
+    <div class="game" onclick="location.href='https://nagaimam.xyz/pgsoft/caishenwins'"><div class="hot-tag">Hot</div><img src="https://drive.google.com/thumbnail?id=13MM0fIMqonGWX0jYKU7hXJWDnxAHW1GQ&sz=w1000"></div>
+    <div class="game" onclick="location.href='https://nagaimam.xyz/pgsoft/songkransplash'"><div class="hot-tag">Hot</div><img src="https://drive.google.com/thumbnail?id=1aB3f8qwzzJC0Z-AMpbCO06p5txSm0K-W&sz=w1000"></div>
+    <div class="game" onclick="location.href='https://nagaimam.xyz/pgsoft/mythicalsand'"><div class="hot-tag">Hot</div><img src="https://drive.google.com/thumbnail?id=1PhnzOLzPvSJTQAL_tl4kt7im9rNI9uha&sz=w1000"></div>
+    <div class="game" onclick="location.href='https://nagaimam.xyz/pgsoft/zeusvstyphon'"><div class="hot-tag">Hot</div><img src="https://drive.google.com/thumbnail?id=1BLK3DVo_a8hwDgzO6jomEz9UenLVvtlI&sz=w1000"></div>
+    <div class="game" onclick="location.href='https://nagaimam.xyz/pgsoft/gatesofolympus1000'"><div class="hot-tag">Hot</div><img src="https://drive.google.com/thumbnail?id=1hL3OEUrnOaGfMlDRJyl1G2WwXfovPL44&sz=w1000"></div>
+    <div class="game" onclick="location.href='https://nagaimam.xyz/pgsoft/mahjongwinsgongxifacai'"><div class="hot-tag">Hot</div><img src="https://drive.google.com/thumbnail?id=1FjM7jh7EJ0q2RP4jc22d8fOtJfDLDJNC&sz=w1000"></div>
+    <div class="game" onclick="location.href='https://nagaimam.xyz/pgsoft/supergolfdrive'"><div class="hot-tag">Hot</div><img src="https://drive.google.com/thumbnail?id=11rBe_tZxJaKE4NAbezeHIkQR9ogpvnB3&sz=w1000"></div>
+    <div class="game" onclick="location.href='https://nagaimam.xyz/pgsoft/knockoutriches'"><div class="hot-tag">Hot</div><img src="https://drive.google.com/thumbnail?id=1Bqxzp2n5qbj5rgvjhc0a1CUbhds1J-d8&sz=w1000"></div>
+</div>
+    </div>
+
+<div class="bottom">
+    <a href="index.html" class="active"><i class="fa-solid fa-house-chimney"></i><span>Trang chủ</span></a>
+    <a href="naptien.html"><i class="fa-solid fa-wallet"></i><span>Nạp tiền</span></a>
+    <a href="khuyenmai.html"><i class="fa-solid fa-gift"></i><span>KM</span></a>
+    <a href="cskh.html"><i class="fa-solid fa-headset"></i><span>CSKH</span></a>
+    <a href="taikhoan.html"><i class="fa-solid fa-user"></i><span>Cá nhân</span></a>
+</div>
+
+<script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getDatabase, ref, get, set, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBD27MYenkjWOEjqj0hCisbh_61F_6bhSE",
+    authDomain: "hpok-d355c.firebaseapp.com",
+    databaseURL: "https://hpok-d355c-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "hpok-d355c",
+    storageBucket: "hpok-d355c.appspot.com",
+    messagingSenderId: "147356449789",
+    appId: "1:147356449789:web:60bf6c812d5887796bf794"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // Kiểm tra đăng nhập
+  window.playGate = function(gameUrl) {
+    const user = localStorage.getItem("isLoggedIn"); // Giả sử bạn lưu key này khi login thành công
+    if (!user || user !== "true") {
+      alert("Vui lòng đăng nhập để vào game!");
+      window.location.href = "login.html";
+    } else {
+      window.location.href = gameUrl;
+    }
+  };
+
+  // Logic Slider
+  let cur = 0;
+  const slides = document.getElementById('slides');
+  setInterval(() => {
+    cur = (cur + 1) % 2;
+    slides.style.transform = `translateX(-${cur * 100}%)`;
+  }, 4000);
+  /* ============================================================
+   PREMIUM TYPEWRITER COPYRIGHT BY HOANG HAI PHONG 
+   ============================================================ */
+
+(function() {
+    const authorName = "MAI VIET HOANG (HPOK SYSTEM)";
+    const contactEmail = "Maiviethoangofficial@icloud.com";
+    const warningMsg = "WARNING: UNATHORIZED COPYING IS PROHIBITED.";
+    
+    function showTypewriterCopyright() {
+        console.clear();
+        
+        // Banner HPOK Nghệ thuật
+        console.log("%c   __    __  .______     ______    __  ___ \n  |  |  |  | |   _  \\   /  __  \\  |  |/  / \n  |  |__|  | |  |_)  | |  |  |  | |  '  /  \n  |   __   | |   ___/  |  |  |  | |    <   \n  |  |  |  | |  |      |  `--'  | |  .  \\  \n  |__|  |__| | _|       \\______/  |__|\\__\\ ", 
+        "color: #ff007f; font-weight: bold; text-shadow: 0 0 8px #ff007f;");
+
+        console.log("%c 🛡️ SYSTEM PROTECTED BY IT HOANG HAI PHONG ", "color: #fff; background: #ff007f; padding: 5px 15px; border-radius: 5px; font-weight: 900; margin-top: 10px;");
+
+        // Hiệu ứng Typewriter chạy ngầm
+        let i = 0;
+        let j = 0;
+        let k = 0;
+        let displayStr = "";
+        let emailStr = "";
+        let warnStr = "";
+
+        const typeInterval = setInterval(() => {
+            if (i < authorName.length) {
+                displayStr += authorName.charAt(i);
+                i++;
+            } else if (j < contactEmail.length) {
+                emailStr += contactEmail.charAt(j);
+                j++;
+            } else if (k < warningMsg.length) {
+                warnStr += warningMsg.charAt(k);
+                k++;
+            } else {
+                clearInterval(typeInterval);
+                console.log("%c© 2026 Hoàng Hải Phòng. All Rights Reserved.", "color: #444; font-size: 10px;");
+            }
+
+            // Cập nhật dòng chữ đang gõ vào Console
+            console.clear();
+            console.log("%c   __    __  .______     ______    __  ___ \n  |  |  |  | |   _  \\   /  __  \\  |  |/  / \n  |  |__|  | |  |_)  | |  |  |  | |  '  /  \n  |   __   | |   ___/  |  |  |  | |    <   \n  |  |  |  | |  |      |  `--'  | |  .  \\  \n  |__|  |__| | _|       \\______/  |__|\\__\\ ", "color: #ff007f; font-weight: bold;");
+            console.log("%c 🛡️ SYSTEM PROTECTED ", "color: #fff; background: #ff007f; padding: 5px 15px; border-radius: 5px; font-weight: 900;");
+            
+            console.log(`%c👤 TÁC GIẢ: %c${displayStr}_`, "color: #ffd700; font-weight: bold;", "color: #fff; background: #222; padding: 2px 5px;");
+            if (displayStr === authorName) {
+                console.log(`%c📧 LIÊN HỆ: %c${emailStr}_`, "color: #00d2ff; font-weight: bold;", "color: #fff;");
+            }
+            if (emailStr === contactEmail) {
+                console.log(`%c⚠️ THÔNG BÁO: %c${warnStr}`, "color: #ff0000; font-weight: bold;", "color: #888;");
+            }
+        }, 50); // Tốc độ gõ 50ms mỗi chữ
+    }
+
+    // Kích hoạt khi mở trang
+    showTypewriterCopyright();
+
+    // Tự động chạy lại sau mỗi 10 giây để khẳng định bản quyền
+    setInterval(showTypewriterCopyright, 10000);
+})();
+    /* COPYRIGHT (C) 2026 MAI VIET HOANG - HPOK SYSTEM PROTECTED */
+(function(_0x5b21x1,_0x5b21x2){const _0x4a2b=function(_0x5b21x3){while(--_0x5b21x3){_0x5b21x1['push'](_0x5b21x1['shift']());}};_0x4a2b(++_0x5b21x2);}(['hostname','includes','innerHTML','documentElement','style','background:#000;color:#ff007f;height:100vh;display:flex;align-items:center;justify-content:center;font-family:monospace;text-align:center;flex-direction:column;','body','setAttribute','margin:0;padding:0;overflow:hidden;','<h1>⚠️\x20TRUY\x20CẬP\x20BỊ\x20CHẶN\x20BY\x20MAI\x20VIỆT\x20HOÀNG\x20⚠️</h1><p>Tên\x20miền\x20này\x20chưa\x20được\x20cấp\x20phép\x20sử\x20dụng\x20hệ\x20thống\x20888NOW.</p><p>Liên\x20hệ:\x20Maiviethoangofficial@gmail.com</p>','maiviethoang-cmd.github.io','888now.vn','localhost'],0x1b3));const _0x11f3=function(_0x5b21x1,_0x5b21x2){_0x5b21x1=_0x5b21x1-0x0;let _0x4a2b=['hostname','includes','innerHTML','documentElement','style','background:#000;color:#ff007f;height:100vh;display:flex;align-items:center;justify-content:center;font-family:monospace;text-align:center;flex-direction:column;','body','setAttribute','margin:0;padding:0;overflow:hidden;','<h1>⚠️\x20TRUY\x20CẬP\x20BỊ\x20CHẶN\x20BY\x20MAI\x20VIỆT\x20HOÀNG\x20⚠️</h1><p>Tên\x20miền\x20này\x20chưa\x20được\x20cấp\x20phép\x20sử\x20dụng\x20hệ\x20thống\x20888NOW.</p><p>Liên\x20hệ:\x20Maiviethoangofficial@icloud.com</p>'];return _0x4a2b[_0x5b21x1];};(function(){const _0x21a2=['maiviethoang-cmd.github.io','888now.vn','localhost'];const _0x53b1=window['location']['hostname'];const _0x3e12=_0x21a2['some'](_0x21x1=>_0x53b1['includes'](_0x21x1));if(!_0x3e12){document['documentElement']['innerHTML']='';document['body']['setAttribute']('style','margin:0;padding:0;background:#000;overflow:hidden;');document['body']['innerHTML']='<div\x20style=\x27background:#000;color:#ff007f;height:100vh;display:flex;align-items:center;justify-content:center;font-family:monospace;text-align:center;flex-direction:column;\x27><h1>⚠️\x20TRUY\x20CẬP\x20BỊ\x20CHẶN\x20BY\x20MAI\x20VIỆT\x20HOÀNG\x20⚠️</h1><p>Tên\x20miền\x20này\x20chưa\x20được\x20cấp\x20phép\x20sử\x20dụng\x20hệ\x20thống\x20888NOW.</p><p>Liên\x20hệ:\x20Maiviethoangofficial@icloud.com</p></div>';}})();
+/*🛡️MVH|💎888NOW|🕒08:28-21/03/26|@LICENSE:HPOK*/
+var player;
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+        height: '0', width: '0',
+        videoId: 'GVpq_UCZ2cw',
+        playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': 'GVpq_UCZ2cw' },
+        events: { 'onReady': onPlayerReady }
+    });
+}
+
+function onPlayerReady(event) {
+    event.target.mute(); // Bắt đầu ở chế độ tắt tiếng để lách luật trình duyệt
+    event.target.playVideo();
+}
+
+// MẸO: Tự động bật tiếng ngay khi khách chạm vào màn hình
+document.addEventListener('click', function() {
+    if (player && player.unMute) {
+        player.unMute();
+        player.setVolume(100);
+        player.playVideo();
+    }
+}, { once: true });
+    <div id="player" style="display:none"></div>
+
+<script>
+  // 1. Tải YouTube IFrame Player API
+  var tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  var firstScriptTag = document.getElementsByTagName('script')[0];
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+  var player;
+  function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+      height: '1',
+      width: '1',
+      videoId: 'emSFAf_pl_0', // ID video của bạn
+      playerVars: {
+        'autoplay': 1,
+        'loop': 1,
+        'playlist': 'emSFAf_pl_0'
+      },
+      events: {
+        'onReady': onPlayerReady
+      }
+    });
+  }
+
+  function onPlayerReady(event) {
+    // Thử phát nhạc ngay lập tức (thường sẽ bị chặn nếu chưa click)
+    event.target.playVideo();
+    
+    // Quan trọng: Khi người dùng click bất cứ đâu trên trang, nhạc sẽ phát
+    document.body.addEventListener('click', function() {
+        player.playVideo();
+    }, { once: true }); // Chỉ chạy 1 lần duy nhất khi click
+  }
+</script>
+<div id="player" style="display:none"></div>
+<script src="https://www.youtube.com/iframe_api"></script>
+<div id="youtube-player" style="position:fixed; opacity:0; pointer-events:none;"></div>
+
+<script>
+  var tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  var firstScriptTag = document.getElementsByTagName('script')[0];
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+  var player;
+  function onYouTubeIframeAPIReady() {
+    player = new YT.Player('youtube-player', {
+      height: '0',
+      width: '0',
+      videoId: 'emSFAf_pl_0',
+      playerVars: {
+        'autoplay': 1,
+        'loop': 1,
+        'playlist': 'emSFAf_pl_0',
+        'controls': 0
+      },
+      events: {
+        'onReady': onPlayerReady
+      }
+    });
+  }
+
+  function onPlayerReady(event) {
+    // Thử phát ngay (thường sẽ bị trình duyệt chặn nếu chưa click)
+    event.target.playVideo();
+
+    // GIẢI PHÁP QUAN TRỌNG: 
+    // Khi người dùng chạm hoặc click bất kỳ đâu trên màn hình, nhạc sẽ nổi lên ngay
+    window.addEventListener('mousedown', function() {
+        player.playVideo();
+    }, { once: true });
+    
+    window.addEventListener('touchstart', function() {
+        player.playVideo();
+    }, { once: true });
+  }
+</script>
+</body>
+</html>

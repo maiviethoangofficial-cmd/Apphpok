@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+    <title>GAME BÀI - HPOK OFFICIAL</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --pink-main: #ff4d94; 
+            --bg-dark: #000; 
+            --glass-white: rgba(255, 255, 255, 0.95);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { 
+            margin: 0; font-family: 'Lexend', sans-serif; background: var(--bg-dark); 
+            color: #fff; overflow-x: hidden; padding-bottom: 100px;
+        }
+
+        /* Đồng bộ Popup từ home.html */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center; z-index: 5000;
+        }
+        .modal-box {
+            width: 85%; max-width: 320px; background: var(--glass-white); border-radius: 30px;
+            padding: 30px; text-align: center; color: #000;
+            box-shadow: 0 20px 60px rgba(255, 77, 148, 0.4);
+            animation: bounceIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-btn {
+            width: 100%; padding: 14px; background: var(--pink-main); color: #fff;
+            border: none; border-radius: 18px; font-weight: 900; text-transform: uppercase;
+        }
+
+        /* Header */
+        header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 15px; background: #000; border-bottom: 2px solid var(--pink-main);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .btn-back { color: #fff; font-size: 20px; text-decoration: none; }
+
+        /* Wallet Section */
+        .wallet-card {
+            margin: 15px; background: #fff; border-radius: 20px; padding: 15px 20px;
+            color: #000; display: flex; justify-content: space-between; align-items: center;
+        }
+        .wallet-card span { font-size: 11px; color: #888; font-weight: 700; display: block; }
+        .wallet-card b { font-size: 20px; color: var(--pink-main); }
+
+        /* Game Grid */
+        .game-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; }
+        .game-item { border-radius: 18px; overflow: hidden; border: 1px solid #222; position: relative; transition: 0.3s; background: #111; }
+        .game-item img { width: 100%; display: block; aspect-ratio: 1/1; object-fit: cover; }
+        .game-item:active { transform: scale(0.96); border-color: var(--pink-main); }
+        
+        .game-name { 
+            padding: 10px; text-align: center; font-size: 11px; font-weight: 900; 
+            text-transform: uppercase; background: linear-gradient(to top, #000, transparent);
+        }
+
+        .hot-tag { position: absolute; top: 10px; right: 10px; background: var(--pink-main); color: #fff; font-size: 8px; padding: 3px 7px; border-radius: 6px; font-weight: 900; animation: flash 1s infinite alternate; }
+        @keyframes flash { from { opacity: 0.6; } to { opacity: 1; } }
+
+        /* Game Overlay */
+        .game-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 4000; display: none; }
+        .game-header { position: absolute; top: 0; width: 100%; height: 55px; background: rgba(0,0,0,0.9); display: flex; justify-content: space-between; align-items: center; padding: 0 15px; z-index: 4001; }
+        .btn-exit { background: var(--pink-main); color: #fff; border: none; padding: 9px 16px; border-radius: 10px; font-weight: 900; }
+    </style>
+</head>
+<body>
+
+<div class="modal-overlay" id="customAlert">
+    <div class="modal-box">
+        <i class="fa-solid fa-circle-exclamation" style="font-size:50px; color:var(--pink-main); margin-bottom:15px;"></i>
+        <h3 id="alertTitle">THÔNG BÁO</h3>
+        <p id="alertMsg">Nội dung...</p>
+        <button class="modal-btn" onclick="closeAlert()">ĐÃ HIỂU</button>
+    </div>
+</div>
+
+<div class="game-overlay" id="gameArea">
+    <div class="game-header">
+        <button class="btn-exit" onclick="closeGame()"><i class="fa-solid fa-chevron-left"></i> QUAY LẠI</button>
+        <div style="color:var(--pink-main); font-weight:900;">HPOK CASINO</div>
+    </div>
+    <iframe src="" style="width:100%; height:100%; border:none; padding-top:55px;" id="gameFrame" allowfullscreen></iframe>
+</div>
+
+<header>
+    <a href="home.html" class="btn-back"><i class="fa-solid fa-chevron-left"></i></a>
+    <div style="font-weight:900; letter-spacing:1px;">SẢNH GAME BÀI</div>
+    <i class="fa-solid fa-ellipsis-vertical" style="color:var(--pink-main)"></i>
+</header>
+
+<div class="wallet-card">
+    <div>
+        <span>SỐ DƯ CỦA BẠN</span>
+        <b id="uBalance">0 ₫</b>
+    </div>
+    <a href="naptien.html" style="color:var(--pink-main); font-size:24px;"><i class="fa-solid fa-circle-plus"></i></a>
+</div>
+
+<div class="game-grid" id="gameContainer">
+    </div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // Đồng bộ cấu hình từ home.html
+    const firebaseConfig = {
+        apiKey: "AIzaSyBD27MYenkjWOEjqj0hCisbh_61F_6bhSE",
+        authDomain: "hpok-d355c.firebaseapp.com",
+        databaseURL: "https://hpok-d355c-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "hpok-d355c"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    let currentBal = 0;
+    const username = localStorage.getItem("username");
+
+    // Danh sách 7 game bài của bạn
+    const cardGames = [
+        { n: "Tiến Lên Miền Nam", i: "1nAW5ukDpRc1QLL6CLAhRT9WptfL6aDta", l: "tien-len-mn.html" },
+        { n: "Tiến Lên Miền Bắc", i: "1FxyYdI5yaSA0uP_Au8lykrefTlHGk-o4", l: "tien-len-mb.html" },
+        { n: "Liêng Online", i: "1FMA9_LYeFCRw4x_uKuWwT-SmqJ7rhevP", l: "lieng.html" },
+        { n: "Ba Cây", i: "1JdhMwYuJVEiEXQ4IROXVtYDalIZvYDd4", l: "ba-cay.html" },
+        { n: "Sâm Lốc VIP", i: "10vH6T8t85dND1fRjh8-wwjbkb6oZwlKh", l: "sam-loc.html" },
+        { n: "Phỏm Tá Lả", i: "1K1yBSz_RetgPn3ZB85fxBRnLg-O14-Iv", l: "phom.html" },
+        { n: "Chắn Vạn Văn", i: "1o3tTdXRiciUbz2O78z15ZRENY4vZb-KW", l: "chan.html" }
+    ];
+
+    const container = document.getElementById('gameContainer');
+    cardGames.forEach(g => {
+        container.innerHTML += `
+            <div class="game-item" onclick="playGame('${g.l}')">
+                <div class="hot-tag">HOT</div>
+                <img src="https://drive.google.com/thumbnail?id=${g.i}&sz=w1000">
+                <div class="game-name">${g.n}</div>
+            </div>`;
+    });
+
+    // Lấy số dư thực tế từ Firebase
+    if(username) {
+        onValue(ref(db, 'users/' + username), (snap) => {
+            if (snap.exists()) {
+                currentBal = snap.val().balance || 0;
+                document.getElementById('uBalance').innerText = currentBal.toLocaleString() + " ₫";
+            }
+        });
+    }
+
+    // Logic chơi game & Trừ tiền đồng bộ
+    window.playGame = async (link) => {
+        if(currentBal < 100000) {
+            showAlert("Số dư không đủ 100.000₫ để vào bàn. Vui lòng nạp thêm!", "SỐ DƯ THẤP");
+            return;
+        }
+        // Trừ phí vào sảnh giống home.html
+        await update(ref(db, 'users/' + username), { balance: currentBal - 100000 });
+        
+        // Chuyển hướng hoặc mở Iframe tùy bạn chọn (Dưới đây là mở Iframe như trang chủ)
+        document.getElementById('gameFrame').src = link;
+        document.getElementById('gameArea').style.display = 'block';
+    };
+
+    window.showAlert = (msg, title) => {
+        document.getElementById('alertMsg').innerText = msg;
+        document.getElementById('alertTitle').innerText = title;
+        document.getElementById('customAlert').style.display = 'flex';
+    };
+    window.closeAlert = () => document.getElementById('customAlert').style.display = 'none';
+    window.closeGame = () => { document.getElementById('gameArea').style.display = 'none'; document.getElementById('gameFrame').src = ''; };
+</script>
+</body>
+</html>

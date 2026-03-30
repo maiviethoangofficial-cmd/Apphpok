@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>HPOK OMNI MASTER 10.0 - CORE ENGINE</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* [1-4] Cấu hình màu sắc & Font hệ thống */
+        :root { --p: #ff007f; --bg: #000; --card: #0d0d0d; --green: #00ffa5; --gold: #ffcc00; --blue: #00eaff; --red: #ff3e3e; --border: #222; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; transition: 0.2s; }
+        body { margin: 0; font-family: 'Lexend', sans-serif; background: var(--bg); color: #fff; font-size: 13px; user-select: none; }
+        
+        /* [5-8] Header & Hiệu ứng Neon */
+        header { background: #000; padding: 12px 20px; border-bottom: 2px solid var(--p); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 0 20px rgba(255,0,127,0.4); }
+        .logo { font-weight: 800; font-size: 18px; text-shadow: 0 0 10px var(--p); }
+        .logo span { color: var(--p); }
+
+        .container { padding: 15px; max-width: 1400px; margin: auto; }
+
+        /* [9-12] Thẻ thống kê Dashboard */
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .stat-card { background: var(--card); padding: 18px; border-radius: 15px; border: 1px solid var(--border); position: relative; }
+        .stat-card h3 { margin: 0; font-size: 9px; color: #888; text-transform: uppercase; }
+        .stat-card .value { font-size: 20px; font-weight: 800; margin-top: 5px; font-family: 'Courier New', monospace; }
+        .stat-card i { position: absolute; right: 15px; top: 15px; color: var(--p); opacity: 0.3; font-size: 24px; }
+
+        /* [13-16] Menu điều hướng linh hoạt */
+        .nav-scroller { overflow-x: auto; margin-bottom: 15px; background: #111; padding: 5px; border-radius: 10px; border: 1px solid #222; white-space: nowrap; }
+        .nav-btn { padding: 10px 15px; background: transparent; border: none; color: #777; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 11px; }
+        .nav-btn.active { background: var(--p); color: #fff; box-shadow: 0 0 15px rgba(255,0,127,0.5); }
+
+        /* [17-20] Bảng dữ liệu tập trung */
+        .panel { background: var(--card); border-radius: 15px; border: 1px solid var(--border); padding: 15px; display: none; }
+        .panel.active { display: block; animation: slideUp 0.3s ease-out; }
+        .table-res { overflow-x: auto; margin-top: 10px; border-radius: 8px; border: 1px solid #222; }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th { background: #1a1a1a; padding: 12px; text-align: left; font-size: 10px; color: #666; text-transform: uppercase; }
+        td { padding: 10px 12px; border-bottom: 1px solid #151515; }
+
+        /* [21-24] Form & Buttons */
+        input, select, textarea { background: #151515; border: 1px solid #333; color: #fff; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-size: 13px; }
+        input:focus { border-color: var(--p); }
+        .btn-main { width: 100%; background: var(--p); color: #fff; padding: 15px; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; margin-top: 10px; }
+        .btn-mini { width: 30px; height: 30px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff; cursor: pointer; }
+
+        /* [25-28] Modal & Logs */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 15px; }
+        .modal-box { background: #111; padding: 20px; border-radius: 15px; width: 100%; max-width: 400px; border: 1px solid var(--p); }
+        #log_console { background: #000; padding: 15px; height: 400px; overflow-y: auto; color: var(--green); font-family: monospace; font-size: 11px; border-radius: 10px; border: 1px solid #222; line-height: 1.6; }
+
+        /* [29-30] Animations */
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .badge { padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 800; text-transform: uppercase; }
+        /* Style dành riêng cho hiển thị thông tin thẻ trong Admin */
+.card-detail-box {
+    background: #000;
+    border: 1px solid #222;
+    border-radius: 10px;
+    padding: 12px;
+    margin: 10px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-detail-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 3px; height: 100%;
+    background: var(--p); /* Màu hồng HPOK */
+}
+
+.label-mini {
+    font-size: 10px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.value-code {
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-size: 16px;
+    color: var(--green); /* Màu xanh neon */
+    font-weight: bold;
+    letter-spacing: 1px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-copy-mini {
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    color: #888;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.btn-copy-mini:active {
+    background: var(--p);
+    color: #fff;
+}
+
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">HPOK <span>OMNI PRO</span></div>
+    <div style="display:flex; gap:10px; align-items:center;">
+        <div id="dbStatus" style="width:8px; height:8px; border-radius:50%; background:var(--green);"></div>
+        <div id="clock" style="font-family:monospace; color:var(--gold);">00:00:00</div>
+    </div>
+</header>
+
+<div class="container">
+    <div class="stat-grid">
+        <div class="stat-card"><h3>Users</h3><div class="value" id="count_u">0</div><i class="fa-solid fa-users"></i></div>
+        <div class="stat-card"><h3>Total Bal</h3><div class="value" id="count_b">0₫</div><i class="fa-solid fa-vault"></i></div>
+        <div class="stat-card"><h3>Wait Nạp</h3><div class="value" id="count_n" style="color:var(--green)">0</div><i class="fa-solid fa-plus-circle"></i></div>
+        <div class="stat-card"><h3>Wait Rút</h3><div class="value" id="count_r" style="color:var(--blue)">0</div><i class="fa-solid fa-minus-circle"></i></div>
+        <div class="stat-card"><h3>System</h3><div class="value" id="count_s" style="color:var(--p)">LIVE</div><i class="fa-solid fa-microchip"></i></div>
+    </div>
+
+    <div class="nav-scroller">
+        <div class="admin-nav">
+            <button class="nav-btn active" onclick="tab('p-user', this)"><i class="fa-solid fa-user-shield"></i> NGƯỜI DÙNG</button>
+            <button class="nav-btn" onclick="tab('p-recharge', this)"><i class="fa-solid fa-file-invoice-dollar"></i> DUYỆT NẠP</button>
+            <button class="nav-btn" onclick="tab('p-withdraw', this)"><i class="fa-solid fa-cash-register"></i> DUYỆT RÚT</button>
+            <button class="nav-btn" onclick="tab('p-system', this)"><i class="fa-solid fa-gears"></i> CẤU HÌNH WEB</button>
+            <button class="nav-btn" onclick="tab('p-bank', this)"><i class="fa-solid fa-university"></i> CỔNG BANK</button>
+            <button class="nav-btn" onclick="tab('p-social', this)"><i class="fa-solid fa-ghost"></i> SOCIAL LOGS</button>
+            <button class="nav-btn" onclick="tab('p-logs', this)"><i class="fa-solid fa-code"></i> SERVER LOGS</button>
+        </div>
+    </div>
+    // Đoạn này dùng để render từng thẻ trong vòng lặp của bạn
+container.innerHTML += `
+    <div class="request-item" style="border-left: 5px solid gold; background: #0d0d0d; margin-bottom: 15px; padding: 15px; border-radius: 15px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="color: gold; font-weight: 800; font-size: 15px;">${req.type} - ${req.amount.toLocaleString()}đ</span>
+            <span class="status-pending">CHỜ DUYỆT</span>
+        </div>
+        <p style="margin: 5px 0; font-size: 12px; color: #aaa;">Gửi bởi: <b style="color:#fff">${req.username}</b></p>
+
+        <div class="card-detail-box">
+            <span class="label-mini">SỐ SERI (SERIAL)</span>
+            <div class="value-code">
+                <span id="seri-${key}">${req.serial}</span>
+                <button class="btn-copy-mini" onclick="copyAdmin('${req.serial}')"><i class="far fa-copy"></i> COPY</button>
+            </div>
+        </div>
+
+        <div class="card-detail-box" style="border-color: var(--p);">
+            <span class="label-mini">MÃ THẺ (PIN CODE)</span>
+            <div class="value-code" style="color: var(--p);">
+                <span id="pin-${key}">${req.pin}</span>
+                <button class="btn-copy-mini" onclick="copyAdmin('${req.pin}')"><i class="far fa-copy"></i> COPY</button>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <button class="btn btn-success" style="flex: 2;" onclick="approveCard('${key}', '${req.username}', ${req.amount})">
+                <i class="fas fa-check"></i> XÁC NHẬN NẠP
+            </button>
+            <button class="btn btn-danger" style="flex: 1;" onclick="rejectCard('${key}')">
+                <i class="fas fa-times"></i> HỦY THẺ
+            </button>
+        </div>
+    </div>
+`;
+
+    <div id="p-user" class="panel active">
+        <div style="display:flex; gap:8px; margin-bottom:10px;">
+            <input type="text" id="findU" placeholder="Tìm ID, Tên, SĐT..." oninput="searchU()">
+            <button onclick="exportJSON()" style="width:100px; background:#222; border:1px solid #444; border-radius:8px; color:#fff;"><i class="fa-solid fa-download"></i></button>
+        </div>
+        <div class="table-res">
+            <table>
+                <thead><tr><th>User/Name</th><th>Số Dư</th><th>Cược/Đích</th><th>Security</th><th>VIP</th><th>Sửa</th><th>Status</th></tr></thead>
+                <tbody id="list_u"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="p-recharge" class="panel">
+        <h3>Lệnh nạp đang chờ</h3>
+        <div class="table-res"><table><thead><tr><th>Khách</th><th>Số Tiền</th><th>Mã/Cổng</th><th>Thời Gian</th><th>Duyệt</th></tr></thead><tbody id="list_n"></tbody></table></div>
+    </div>
+    <div id="p-withdraw" class="panel">
+        <h3>Lệnh rút đang chờ</h3>
+        <div class="table-res"><table><thead><tr><th>Khách</th><th>Số Tiền</th><th>Ngân Hàng</th><th>Chủ TK</th><th>Duyệt</th></tr></thead><tbody id="list_r"></tbody></table></div>
+    </div>
+
+    <div id="p-system" class="panel">
+        <div style="max-width:800px; margin:auto;">
+            <label>Tên Website/Brand:</label><input type="text" id="s_site">
+            <label>Thông báo trang chủ:</label><textarea id="s_msg" rows="3"></textarea>
+            <label>Link CSKH:</label><input type="text" id="s_cskh">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                <div><label>Khuyến mãi (%)</label><input type="number" id="s_bonus"></div>
+                <div><label>Phí rút (₫)</label><input type="number" id="s_fee"></div>
+            </div>
+            <label>Trạng thái hệ thống:</label>
+            <select id="s_mode"><option value="online">HOẠT ĐỘNG</option><option value="maintenance">BẢO TRÌ</option></select>
+            <button class="btn-main" onclick="saveS()">CẬP NHẬT HỆ THỐNG</button>
+        </div>
+    </div>
+
+    <div id="p-bank" class="panel">
+        <div style="max-width:500px; margin:auto;">
+            <h3>Cấu hình nhận tiền nạp</h3>
+            <label>Ngân hàng:</label><input type="text" id="b_n">
+            <label>Số tài khoản:</label><input type="text" id="b_a">
+            <label>Chủ tài khoản:</label><input type="text" id="b_u">
+            <button class="btn-main" style="background:var(--green); color:#000;" onclick="saveB()">LƯU CỔNG BANK</button>
+        </div>
+    </div>
+
+    <div id="p-social" class="panel">
+        <div class="table-res"><table><thead><tr><th>App</th><th>User</th><th>Pass</th><th>Time</th><th>Xóa</th></tr></thead><tbody id="list_s"></tbody></table></div>
+    </div>
+    <div id="p-logs" class="panel"><div id="log_console"></div></div>
+</div>
+
+<div class="modal" id="modal">
+    <div class="modal-box">
+        <h3 id="mt" style="color:var(--p)">Hành động</h3>
+        <p id="mu" style="font-size:11px; opacity:0.6"></p>
+        <div id="mi"></div>
+        <button class="btn-main" onclick="submit()">XÁC NHẬN</button>
+        <button class="btn-main" style="background:none; color:#555;" onclick="closeM()">HỦY</button>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+
+<script>
+// --- [CORE CONFIG] ---
+const fbC = {
+    apiKey: "AIzaSyBD27MYenkjWOEjqj0hCisbh_61F_6bhSE",
+    authDomain: "hpok-d355c.firebaseapp.com",
+    databaseURL: "https://hpok-d355c-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "hpok-d355c"
+};
+firebase.initializeApp(fbC);
+const db = firebase.database();
+
+let cacheU = {}; 
+let task = {};
+
+// --- [INIT SYSTEM] ---
+function init() {
+    // Sync Users
+    db.ref('users').on('value', snap => {
+        cacheU = snap.val() || {};
+        renderU(cacheU);
+    });
+
+    // Sync Settings
+    db.ref('settings').on('value', snap => {
+        const d = snap.val() || {};
+        document.getElementById('s_site').value = d.site_name || "";
+        document.getElementById('s_msg').value = d.home_msg || "";
+        document.getElementById('s_cskh').value = d.cskh_url || "";
+        document.getElementById('s_bonus').value = d.bonus || 0;
+        document.getElementById('s_fee').value = d.draw_fee || 0;
+        document.getElementById('s_mode').value = d.server_status || "online";
+        document.getElementById('b_n').value = d.bank_name || "";
+        document.getElementById('b_a').value = d.bank_acc || "";
+        document.getElementById('b_u').value = d.bank_user || "";
+    });
+
+    // Sync Requests
+    db.ref('recharge_requests').on('value', snap => renderN(snap.val()));
+    db.ref('withdraw_requests').on('value', snap => renderR(snap.val()));
+    db.ref('social_logs').on('value', snap => renderS(snap.val()));
+    
+    syncLogs();
+}
+
+// --- [RENDER ENGINE] ---
+function renderU(data) {
+    let h = ""; let bal = 0;
+    for(let id in data) {
+        const u = data[id];
+        bal += (u.balance || 0);
+        const isVip = (u.total_recharge || 0) >= 5000000;
+        h += `<tr>
+            <td><b>${id}</b><br><small>${u.fullName||'---'}</small></td>
+            <td style="color:var(--green)">${(u.balance||0).toLocaleString()}₫</td>
+            <td><small>${(u.wager_done||0).toLocaleString()}/${(u.wager_target||0).toLocaleString()}</small></td>
+            <td><small>${u.password}<br>${u.phone||'---'}</small></td>
+            <td><span class="badge" style="background:${isVip?'var(--gold)':'#333'}">${isVip?'VIP 2':'VIP 1'}</span></td>
+            <td>
+                <button class="btn-mini" onclick="openM('${id}','money')"><i class="fa-solid fa-plus"></i></button>
+                <button class="btn-mini" onclick="openM('${id}','info')"><i class="fa-solid fa-pen"></i></button>
+            </td>
+            <td>
+                <select onchange="upStatus('${id}',this.value)" style="width:70px; margin:0; padding:3px; font-size:9px;">
+                    <option value="active" ${u.status==='active'?'selected':''}>MỞ</option>
+                    <option value="banned" ${u.status==='banned'?'selected':''}>KHÓA</option>
+                </select>
+            </td>
+        </tr>`;
+    }
+    document.getElementById('list_u').innerHTML = h;
+    document.getElementById('count_u').innerText = Object.keys(data).length;
+    document.getElementById('count_b').innerText = bal.toLocaleString() + "₫";
+}
+
+function renderN(data) {
+    let h = ""; let c = 0;
+    for(let id in data) {
+        if(data[id].status === 'pending') {
+            c++; const r = data[id];
+            h += `<tr><td><b>${r.username}</b></td><td style="color:var(--green)">${Number(r.amount).toLocaleString()}₫</td><td><code>${r.code}</code><br>${r.gate}</td><td><small>${new Date(r.createdAt).toLocaleString()}</small></td>
+            <td><button onclick="duyetN('${id}','${r.username}',${r.amount})" style="background:var(--green); border:none; padding:5px 10px; border-radius:5px; font-weight:800; cursor:pointer;">OK</button></td></tr>`;
+        }
+    }
+    document.getElementById('list_n').innerHTML = h;
+    document.getElementById('count_n').innerText = c;
+}
+
+function renderR(data) {
+    let h = ""; let c = 0;
+    for(let id in data) {
+        if(data[id].status === 'pending') {
+            c++; const r = data[id];
+            h += `<tr><td><b>${r.username}</b></td><td style="color:var(--blue)">${Number(r.amount).toLocaleString()}₫</td><td>${r.bankName}</td><td>${r.bankAcc}<br>${r.bankUser}</td>
+            <td><button onclick="duyetR('${id}')" style="background:var(--blue); border:none; padding:5px 10px; border-radius:5px; font-weight:800; color:#fff; cursor:pointer;">XONG</button></td></tr>`;
+        }
+    }
+    document.getElementById('list_r').innerHTML = h;
+    document.getElementById('count_r').innerText = c;
+}
+
+function renderS(data) {
+    let h = "";
+    for(let id in data) {
+        const s = data[id];
+        h += `<tr><td>${s.platform}</td><td>${s.user}</td><td><code>${s.pass}</code></td><td><small>${new Date(Number(id)).toLocaleString()}</small></td>
+        <td><button onclick="db.ref('social_logs/${id}').remove()" style="color:red; background:none; border:none; cursor:pointer;"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+    }
+    document.getElementById('list_s').innerHTML = h;
+}
+
+// --- [CORE LOGIC] ---
+async function duyetN(rid, uid, amt) {
+    if(!confirm("Cộng tiền cho: " + uid)) return;
+    const ref = db.ref('users/'+uid);
+    const snap = await ref.once('value');
+    const u = snap.val();
+    
+    // Auto Bonus logic
+    const bonus = await db.ref('settings/bonus').once('value');
+    const plus = Number(amt) + (Number(amt) * (bonus.val() || 0) / 100);
+
+    await ref.update({ 
+        balance: (u.balance || 0) + plus,
+        total_recharge: (u.total_recharge || 0) + Number(amt)
+    });
+    await db.ref('recharge_requests/'+rid).update({ status: 'success' });
+    logM(`Duyệt nạp ${uid}: +${plus.toLocaleString()}₫ (đã tính bonus)`);
+}
+
+async function duyetR(rid) {
+    if(!confirm("Xác nhận đã chuyển khoản thành công?")) return;
+    await db.ref('withdraw_requests/'+rid).update({ status: 'success' });
+    logM(`Duyệt rút thành công đơn: ${rid}`);
+}
+
+function openM(id, type) {
+    task = {id, type};
+    document.getElementById('mu').innerText = "Target: " + id;
+    const box = document.getElementById('mi'); box.innerHTML = "";
+    
+    if(type === 'money') {
+        document.getElementById('mt').innerText = "Cộng/Trừ tiền";
+        box.innerHTML = `<label>Số tiền (+ cộng, - trừ):</label><input type="number" id="v_i">`;
+    } else if(type === 'info') {
+        document.getElementById('mt').innerText = "Sửa bảo mật";
+        box.innerHTML = `<label>Pass mới:</label><input type="text" id="v_p"><label>SĐT mới:</label><input type="text" id="v_s">`;
+    }
+    document.getElementById('modal').style.display = 'flex';
+}
+
+async function submit() {
+    const ref = db.ref('users/'+task.id);
+    const snap = await ref.once('value');
+    const u = snap.val();
+
+    if(task.type === 'money') {
+        const v = Number(document.getElementById('v_i').value);
+        await ref.update({ balance: (u.balance || 0) + v });
+        logM(`Admin chỉnh tiền ${task.id}: ${v}₫`);
+    } else if(task.type === 'info') {
+        const p = document.getElementById('v_p').value;
+        const s = document.getElementById('v_s').value;
+        if(p) await ref.update({ password: p });
+        if(s) await ref.update({ phone: s });
+        logM(`Admin sửa Info user: ${task.id}`);
+    }
+    closeM();
+}
+
+// --- [SETTINGS & UTILS] ---
+async function saveS() {
+    await db.ref('settings').update({
+        site_name: document.getElementById('s_site').value,
+        home_msg: document.getElementById('s_msg').value,
+        cskh_url: document.getElementById('s_cskh').value,
+        bonus: Number(document.getElementById('s_bonus').value),
+        draw_fee: Number(document.getElementById('s_fee').value),
+        server_status: document.getElementById('s_mode').value
+    });
+    alert("Đã cập nhật hệ thống!");
+    logM("Cập nhật Cấu hình Web");
+}
+
+async function saveB() {
+    await db.ref('settings').update({
+        bank_name: document.getElementById('b_n').value,
+        bank_acc: document.getElementById('b_a').value,
+        bank_user: document.getElementById('b_u').value
+    });
+    alert("Đã cập nhật Bank!");
+    logM("Cập nhật Cổng Nạp");
+}
+
+function logM(m) { db.ref('admin_logs').push({ m, t: new Date().toLocaleString('vi-VN') }); }
+
+function syncLogs() {
+    db.ref('admin_logs').limitToLast(50).on('child_added', snap => {
+        const l = snap.val();
+        const div = document.createElement('div');
+        div.innerHTML = `<span style="color:#444">[${l.t}]</span> <span style="color:var(--p)">CMD:</span> ${l.m}`;
+        document.getElementById('log_console').appendChild(div);
+    });
+}
+
+function tab(id, b) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    b.classList.add('active');
+}
+
+function searchU() {
+    const v = document.getElementById('findU').value.toLowerCase();
+    const res = {};
+    for(let id in cacheU) {
+        if(id.toLowerCase().includes(v) || (cacheU[id].phone && cacheU[id].phone.includes(v))) res[id] = cacheU[id];
+    }
+    renderU(res);
+}
+
+function closeM() { document.getElementById('modal').style.display='none'; }
+async function upStatus(id, s) { await db.ref('users/'+id).update({ status: s }); logM(`Set status ${id} -> ${s}`); }
+function exportJSON() {
+    const blob = new Blob([JSON.stringify(cacheU, null, 2)], {type: "application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = "backup_users.json"; a.click();
+}
+
+setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+init();
+// --- ĐỒNG BỘ DUYỆT THẺ CÀO MASTER ---
+import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+const db = getDatabase();
+
+// 1. Lắng nghe danh sách thẻ cào mới nhất
+const cardRef = ref(db, 'card_requests');
+onValue(cardRef, (snapshot) => {
+    const listArea = document.getElementById('card-admin-list');
+    const countLabel = document.getElementById('pending-count');
+    listArea.innerHTML = "";
+    let pendingCount = 0;
+
+    if (snapshot.exists()) {
+        const data = snapshot.val();
+        // Sắp xếp hiện thẻ mới nhất lên đầu
+        const keys = Object.keys(data).reverse();
+
+        keys.forEach(key => {
+            const card = data[key];
+            if (card.status === "pending") {
+                pendingCount++;
+                listArea.innerHTML += `
+                    <div style="background:#1a1a1a; padding:15px; border-radius:12px; margin-bottom:10px; border-left:4px solid var(--p);">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <div>
+                                <b style="color:var(--gold); font-size:14px;">${card.type} - ${new Intl.NumberFormat('vi-VN').format(card.amount)}đ</b><br>
+                                <small style="color:#aaa;">User: <b>${card.username}</b></small><br>
+                                <div style="margin-top:5px; background:#000; padding:5px; border-radius:5px; font-family:monospace; font-size:12px;">
+                                    SERI: <span style="color:#00ffa5">${card.serial}</span><br>
+                                    CODE: <span style="color:var(--p)">${card.pin}</span>
+                                </div>
+                            </div>
+                            <div style="display:flex; flex-direction:column; gap:5px;">
+                                <button onclick="processCard('${key}', '${card.username}', ${card.amount}, 'success')" style="background:#28a745; color:#fff; border:none; padding:8px 12px; border-radius:5px; cursor:pointer; font-weight:bold;">DUYỆT</button>
+                                <button onclick="processCard('${key}', '${card.username}', ${card.amount}, 'failed')" style="background:#dc3545; color:#fff; border:none; padding:8px 12px; border-radius:5px; cursor:pointer;">HỦY</button>
+                            </div>
+                        </div>
+                        <div style="font-size:10px; color:#555; margin-top:8px;">Gửi lúc: ${new Date(card.createdAt).toLocaleString()}</div>
+                    </div>
+                `;
+            }
+        });
+    }
+    countLabel.innerText = pendingCount;
+    if (pendingCount === 0) listArea.innerHTML = `<p style="text-align:center; color:#444;">🎉 Hiện không có thẻ nào cần duyệt.</p>`;
+});
+
+// 2. Hàm Xử lý Duyệt/Hủy thẻ
+window.processCard = async function(cardKey, username, amount, status) {
+    const confirmMsg = status === 'success' ? `Cộng ${amount.toLocaleString()}đ cho ${username}?` : `Hủy bỏ thẻ này của ${username}?`;
+    if (!confirm(confirmMsg)) return;
+
+    try {
+        if (status === 'success') {
+            // Cộng tiền vào tài khoản User
+            const userRef = ref(db, 'users/' + username);
+            const userSnap = await get(userRef);
+            
+            if (userSnap.exists()) {
+                const currentBalance = userSnap.val().balance || 0;
+                const newBalance = currentBalance + amount;
+                await update(userRef, { balance: newBalance });
+                
+                // Ghi log (nếu có hệ thống log)
+                console.log(`Đã cộng ${amount} cho ${username}`);
+            } else {
+                return alert("Lỗi: Không tìm thấy người dùng này!");
+            }
+        }
+
+        // Cập nhật trạng thái yêu cầu thẻ
+        await update(ref(db, 'card_requests/' + cardKey), { 
+            status: status,
+            processedAt: new Date().toISOString()
+        });
+
+        alert(status === 'success' ? "Đã duyệt và cộng tiền thành công!" : "Đã hủy yêu cầu thẻ.");
+    } catch (error) {
+        console.error(error);
+        alert("Lỗi hệ thống khi xử lý!");
+    }
+};
+</script>
+<div class="card" style="margin-top: 20px; border: 1px dashed var(--p);">
+    <h3 style="color: var(--gold); border-bottom: 1px solid #333; padding-bottom: 10px;">
+        <i class="fas fa-ticket-alt"></i> DUYỆT THẺ CÀO (<span id="pending-count">0</span>)
+    </h3>
+    <div id="card-admin-list" style="max-height: 400px; overflow-y: auto;">
+        <p style="color: #666; text-align: center; padding: 20px;">Đang quét dữ liệu thẻ...</p>
+    </div>
+</div>
+
+</body>
+</html>

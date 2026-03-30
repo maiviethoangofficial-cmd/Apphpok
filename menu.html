@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+    <title>HPOK PRO | PINK 3D EDITION</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* 🛡️MVH|💎888NOW|🕒09:15-21/03/26|@LICENSE:HPOK */
+        :root {
+            --pink-main: #ff1493;
+            --pink-light: #ff69b4;
+            --pink-3d: linear-gradient(145deg, var(--pink-light), #c71585);
+            --gold-accent: #ffd700;
+            --bg-color: #000;
+        }
+
+        body, html {
+            margin: 0; padding: 0; width: 100vw; height: 100vh;
+            background-color: var(--bg-color); color: #fff;
+            font-family: sans-serif; overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* MENU BA GẠCH */
+        #menu-btn {
+            position: fixed; top: 20px; left: 20px; z-index: 1000;
+            color: #fff; font-size: 26px; cursor: pointer;
+            text-shadow: 0 0 10px var(--pink-main); transition: all 0.3s ease;
+        }
+
+        #side-menu {
+            position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
+            background: rgba(10, 0, 0, 0.98); border-right: 3px solid var(--pink-main);
+            box-shadow: 10px 0 40px rgba(255, 20, 147, 0.3); z-index: 999;
+            transition: 0.4s; padding-top: 80px;
+        }
+
+        #side-menu.active { left: 0; }
+        #side-menu ul { list-style: none; padding: 0; }
+        #side-menu li a { display: flex; align-items: center; padding: 18px 25px; color: #eee; text-decoration: none; font-weight: bold; border-bottom: 1px solid #222; }
+        #side-menu li a i { margin-right: 15px; color: var(--pink-main); width: 20px; text-align: center; }
+
+        .app-wrapper { width: 100%; min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* HEADER PINK LUXURY */
+        .header-top {
+            height: 40vh; position: relative; overflow: hidden;
+            background: radial-gradient(circle at top, #300, #000);
+            border-bottom: 3px solid var(--pink-main);
+        }
+
+        .logo-hp {
+            position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
+            width: 100px; height: 100px; background: var(--pink-3d);
+            border-radius: 25px; display: flex; align-items: center; justify-content: center;
+            font-size: 45px; font-weight: 900; color: #fff;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5), inset 0 2px 3px rgba(255,255,255,0.4);
+            border: 3px solid var(--gold-accent); z-index: 2;
+        }
+
+        .header-text {
+            position: absolute; top: 20px; width: 100%; text-align: center;
+            font-size: 11px; color: #aaa; font-weight: bold; letter-spacing: 1px; z-index: 3;
+        }
+
+        /* NỘI DUNG CHÍNH SÁT MÉP */
+        .main-content {
+            flex: 1; background-color: #000; padding: 25px 12px;
+            position: relative; z-index: 5; border-top: 3px solid var(--pink-main);
+            border-radius: 25px 25px 0 0; margin-top: -30px;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.8);
+        }
+
+        .user-info { display: flex; justify-content: space-between; margin-bottom: 25px; gap: 10px; }
+
+        .info-box {
+            flex: 1; background: linear-gradient(145deg, #1a1a1a, #050505);
+            padding: 12px; border-radius: 15px; font-size: 11px; font-weight: bold;
+            text-align: center; border: 1px solid #333;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.05), 0 5px 10px rgba(0,0,0,0.3);
+        }
+
+        .info-box span {
+            color: var(--pink-light); display: block; font-size: 15px;
+            margin-top: 5px; text-shadow: 0 0 5px var(--pink-main);
+        }
+
+        /* GRID 10 NÚT 3D */
+        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+        .hpok-btn {
+            background: linear-gradient(145deg, var(--pink-main), #c71585);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 20px;
+            padding: 20px 10px; text-align: center; display: flex;
+            flex-direction: column; align-items: center; color: #fff;
+            text-decoration: none; box-shadow: 0 8px 15px rgba(0,0,0,0.4), inset 0 2px 3px rgba(255,255,255,0.3);
+            transition: all 0.2s ease;
+        }
+
+        .hpok-btn:active { transform: translateY(4px); box-shadow: 0 4px 8px rgba(0,0,0,0.5); }
+        .hpok-btn i { font-size: 30px; margin-bottom: 10px; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5)); }
+        .hpok-btn span { font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* NÚT VÀNG TẢI APP */
+        .btn-vip {
+            background: linear-gradient(145deg, var(--gold-accent), #b8860b);
+            border: 2px solid #fff; animation: pulse-vip 2s infinite;
+        }
+
+        @keyframes pulse-vip {
+            0% { box-shadow: 0 8px 15px rgba(0,0,0,0.4), 0 0 0 0 rgba(255, 20, 147, 0.5); }
+            70% { box-shadow: 0 8px 15px rgba(0,0,0,0.4), 0 0 0 12px rgba(255, 20, 147, 0); }
+            100% { box-shadow: 0 8px 15px rgba(0,0,0,0.4), 0 0 0 0 rgba(255, 20, 147, 0); }
+        }
+    </style>
+</head>
+<body>
+
+    <i class="fas fa-bars-staggered" id="menu-btn" onclick="toggleMenu()"></i>
+
+    <div id="side-menu">
+        <div style="text-align:center; padding:20px; color:var(--pink-main); font-weight:900;">HPOK PRO PANEL</div>
+        <ul>
+            <li><a href="uudai.html"><i class="fas fa-crown"></i>ĐỘC QUYỀN VIP</a></li>
+            <li><a href="khuyenmai.html"><i class="fas fa-bolt"></i>NẠP TIỀN SIÊU TỐC</a></li>
+            <li><a href="hpok.mobileconfig"><i class="fas fa-shield-halved"></i>CÀI ĐẶT MOBILE</a></li>
+            <li><a href="#"><i class="fas fa-gem"></i>KHUYẾN MÃI VÀNG</a></li>
+            <li><a href="#" onclick="location.reload()"><i class="fas fa-sync"></i>LÀM MỚI APP</a></li>
+        </ul>
+    </div>
+
+    <div class="app-wrapper">
+        <div class="header-top">
+            <div class="header-text">HỆ THỐNG HPOK - ĐỐI TÁC 2026</div>
+            <div class="logo-hp">HP</div>
+        </div>
+
+        <div class="main-content">
+            <div class="user-info">
+                <div class="info-box">THÀNH VIÊN <span id="db-user">Đang tải...</span></div>
+                <div class="info-box">SỐ DƯ VIP <span id="db-balance">0 VND</span></div>
+            </div>
+
+            <div class="grid-container">
+                <a href="#" class="hpok-btn"><i class="fas fa-user-group"></i><span>Giới thiệu</span></a>
+                <a href="hpok.mobileconfig" class="hpok-btn btn-vip"><i class="fas fa-download"></i><span>TẢI APP HPOK</span></a>
+                <a href="#" class="hpok-btn"><i class="fas fa-headset"></i><span>CSKH 24/7</span></a>
+                <a href="uudai.html" class="hpok-btn"><i class="fas fa-circle-exclamation"></i><span>Khiếu nại</span></a>
+                <a href="#" class="hpok-btn"><i class="fas fa-star"></i><span>Đại sứ VIP</span></a>
+                <a href="#" class="hpok-btn"><i class="fas fa-user-gear"></i><span>Chăm sóc ĐL</span></a>
+                <a href="#" class="hpok-btn"><i class="fas fa-network-wired"></i><span>Web Đại lý</span></a>
+                <a href="#" class="hpok-btn"><i class="fas fa-gift"></i><span>CODE HPOK</span></a>
+                <a href="home.html" class="hpok-btn"><i class="fas fa-rotate-left"></i><span>Quay lại</span></a>
+                <a href="logout()" class="hpok-btn"><i class="fas fa-power-off"></i><span>Đăng Xuất</span></a>
+            </div>
+        </div>
+    </div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // 1. Dùng đúng cấu hình từ file register/login của bạn
+    const firebaseConfig = { 
+        apiKey: "AIzaSyBD27MYenkjWOEjqj0hCisbh_61F_6bhSE", 
+        authDomain: "hpok-d355c.firebaseapp.com", 
+        databaseURL: "https://hpok-d355c-default-rtdb.asia-southeast1.firebasedatabase.app", 
+        projectId: "hpok-d355c" 
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // 2. Lấy username từ localStorage (đã lưu khi login/register thành công)
+    const currentUser = localStorage.getItem("username");
+
+    if (!currentUser) {
+        // Nếu chưa đăng nhập, đá về trang login
+        window.location.href = "login.html";
+    } else {
+        // 3. Truy vấn đúng Node 'users/tên-user' trong Database
+        const userRef = ref(db, 'users/' + currentUser);
+        onValue(userRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                // Hiển thị tên thật (FullName) hoặc Username
+                document.getElementById('db-user').innerText = data.fullName || currentUser;
+                // Hiển thị số dư được định dạng tiền tệ
+                document.getElementById('db-balance').innerText = 
+                    new Intl.NumberFormat('vi-VN').format(data.balance || 0) + " VND";
+            }
+        });
+    }
+
+    // Định nghĩa hàm đăng xuất toàn cục
+    window.logout = () => {
+        localStorage.removeItem("username");
+        window.location.href = "login.html";
+    };
+</script>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('side-menu');
+            const btn = document.getElementById('menu-btn');
+            menu.classList.toggle('active');
+            btn.classList.toggle('fa-bars-staggered');
+            btn.classList.toggle('fa-times');
+        }
+
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('side-menu');
+            const btn = document.getElementById('menu-btn');
+            if (!menu.contains(e.target) && !btn.contains(e.target) && menu.classList.contains('active')) {
+                toggleMenu();
+            }
+        });
+    </script>
+</body>
+</html>

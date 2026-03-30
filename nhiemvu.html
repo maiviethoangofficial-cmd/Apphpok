@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+    <title>Hệ Thống Nhiệm Vụ HPOK</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root { --hpok-pink: #ff007f; --hpok-glow: rgba(255, 0, 127, 0.4); --bg: #000; --card: #121212; --gold: #ffd700; --blue: #00d4ff; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; font-family: 'Lexend', sans-serif; background: var(--bg); color: #fff; padding-bottom: 100px; }
+
+        /* Header Fixed */
+        header { background: #111; padding: 15px 20px; border-bottom: 2px solid var(--hpok-pink); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        .back-btn { color: #fff; font-size: 22px; text-decoration: none; }
+        .logo { font-size: 18px; font-weight: 900; }
+        .logo span { color: var(--hpok-pink); }
+        .stats { display: flex; gap: 10px; }
+        .stat-item { background: #222; padding: 5px 10px; border-radius: 15px; border: 1px solid #333; font-size: 12px; font-weight: 800; color: var(--gold); }
+
+        /* Tabs cuộn ngang mượt */
+        .tabs { display: flex; overflow-x: auto; background: #080808; padding: 12px 5px; gap: 8px; border-bottom: 1px solid #222; }
+        .tabs::-webkit-scrollbar { display: none; }
+        .tab { flex: 0 0 auto; padding: 10px 18px; border-radius: 12px; background: #1a1a1a; color: #555; font-size: 12px; font-weight: 700; border: 1px solid #333; transition: 0.3s; }
+        .tab.active { background: var(--hpok-pink); color: #fff; border-color: var(--hpok-pink); box-shadow: 0 0 12px var(--hpok-glow); }
+
+        /* Mission Cards */
+        .container { padding: 15px; display: flex; flex-direction: column; gap: 12px; }
+        .card { background: var(--card); border-radius: 20px; padding: 16px; border: 1px solid #222; position: relative; overflow: hidden; }
+        .card-inner { display: flex; align-items: center; gap: 12px; position: relative; z-index: 2; }
+        .icon-box { width: 50px; height: 50px; background: #1a1a1a; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 22px; color: var(--hpok-pink); border: 1px solid #333; }
+        .info { flex: 1; }
+        .name { font-size: 14px; font-weight: 700; margin-bottom: 4px; display: block; }
+        .reward { font-size: 11px; color: var(--gold); font-weight: 800; text-transform: uppercase; }
+        
+        .progress-sect { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+        .bar-bg { flex: 1; height: 8px; background: #000; border-radius: 10px; border: 1px solid #222; overflow: hidden; }
+        .bar-fill { height: 100%; background: linear-gradient(90deg, var(--hpok-pink), #ff66b2); width: 0%; transition: 1s cubic-bezier(0.1, 0.5, 0.5, 1); }
+
+        .btn { padding: 8px 16px; border-radius: 10px; border: none; font-size: 11px; font-weight: 900; text-transform: uppercase; cursor: pointer; min-width: 80px; }
+        .btn-go { background: #fff; color: #000; }
+        .btn-claim { background: var(--hpok-pink); color: #fff; animation: pulse 1.5s infinite; }
+        .btn-done { background: #222; color: #444; }
+
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 var(--hpok-glow); } 70% { box-shadow: 0 0 0 10px rgba(0,0,0,0); } 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); } }
+
+        /* Nav Bottom */
+        .nav-bot { position: fixed; bottom: 0; width: 100%; max-width: 500px; height: 70px; background: #fff; display: flex; border-top: 1px solid #eee; z-index: 1000; }
+        .link { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: #bbb; font-size: 11px; font-weight: 700; }
+        .link i { font-size: 22px; margin-bottom: 4px; }
+        .link.active { color: var(--hpok-pink); }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="taikhoan.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+    <div class="logo">HPOK <span>NHIỆM VỤ</span></div>
+    <div class="stats">
+        <div class="stat-item"><i class="fa-solid fa-coins"></i> <span id="uBal">0.00</span>k</div>
+    </div>
+</header>
+
+<div class="tabs">
+    <div class="tab active" onclick="setTab('daily', this)">Hàng ngày</div>
+    <div class="tab" onclick="setTab('newbie', this)">Tân thủ</div>
+    <div class="tab" onclick="setTab('recharge', this)">Nạp tiền</div>
+    <div class="tab" onclick="setTab('vip', this)">Sảnh VIP</div>
+    <div class="tab" onclick="setTab('event', this)">Sự kiện</div>
+</div>
+
+<div class="container" id="box"></div>
+
+<nav class="nav-bot">
+    <a href="home.html" class="link"><i class="fa-solid fa-house"></i><span>Sảnh</span></a>
+    <a href="naptien.html" class="link"><i class="fa-solid fa-wallet"></i><span>Nạp</span></a>
+    <a href="#" class="link"><i class="fa-solid fa-gift"></i><span>Ưu đãi</span></a>
+    <a href="cskh.html" class="link"><i class="fa-solid fa-headset"></i><span>CSKH</span></a>
+    <a href="taikhoan.html" class="link active"><i class="fa-solid fa-user"></i><span>Tôi</span></a>
+</nav>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const cfg = {
+        apiKey: "AIzaSyBD27MYenkjWOEjqj0hCisbh_61F_6bhSE",
+        authDomain: "hpok-d355c.firebaseapp.com",
+        databaseURL: "https://hpok-d355c-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "hpok-d355c"
+    };
+
+    const app = initializeApp(cfg);
+    const db = getDatabase(app);
+    const user = localStorage.getItem("username") || "HOANG";
+
+    // KHO NHIỆM VỤ KHỔNG LỒ (Hơn 20 nhiệm vụ)
+    const db_missions = [
+        // HÀNG NGÀY
+        { id: 'd1', cat: 'daily', name: 'Điểm danh nhận quà', reward: 10000, icon: 'fa-calendar-day', tar: 1, key: 'is_online' },
+        { id: 'd2', cat: 'daily', name: 'Cược hiệu lực 5,000k', reward: 50000, icon: 'fa-fire', tar: 5000000, key: 'wager_done' },
+        { id: 'd3', cat: 'daily', name: 'Cược hiệu lực 20,000k', reward: 150000, icon: 'fa-bolt', tar: 20000000, key: 'wager_done' },
+        { id: 'd4', cat: 'daily', name: 'Thắng 10 ván game', reward: 30000, icon: 'fa-trophy', tar: 10, key: 'win_today' },
+        { id: 'd5', cat: 'daily', name: 'Chơi 30 ván game', reward: 20000, icon: 'fa-gamepad', tar: 30, key: 'play_count' },
+
+        // TÂN THỦ
+        { id: 'n1', cat: 'newbie', name: 'Liên kết ngân hàng', reward: 88000, icon: 'fa-university', tar: 1, key: 'bank_linked' },
+        { id: 'n2', cat: 'newbie', name: 'Liên kết Telegram', reward: 20000, icon: 'fa-paper-plane', tar: 1, key: 'tele_linked' },
+        { id: 'n3', cat: 'newbie', name: 'Thay Avatar VIP', reward: 10000, icon: 'fa-user-pen', tar: 1, key: 'avatar_done' },
+        { id: 'n4', cat: 'newbie', name: 'Nạp tiền lần đầu', reward: 50000, icon: 'fa-piggy-bank', tar: 1, key: 'first_recharge' },
+
+        // NẠP TIỀN
+        { id: 'r1', cat: 'recharge', name: 'Nạp tích lũy 1,000k', reward: 100000, icon: 'fa-money-bill-trend-up', tar: 1000000, key: 'daily_recharge' },
+        { id: 'r2', cat: 'recharge', name: 'Nạp tích lũy 5,000k', reward: 300000, icon: 'fa-crown', tar: 5000000, key: 'daily_recharge' },
+        { id: 'r3', cat: 'recharge', name: 'Nạp tích lũy 20,000k', reward: 1000000, icon: 'fa-gem', tar: 20000000, key: 'daily_recharge' },
+
+        // VIP
+        { id: 'v1', cat: 'vip', name: 'Đạt cấp độ VIP 2', reward: 200000, icon: 'fa-medal', tar: 2, key: 'vip_level' },
+        { id: 'v2', cat: 'vip', name: 'Đạt cấp độ VIP 5', reward: 1000000, icon: 'fa-chess-king', tar: 5, key: 'vip_level' },
+        { id: 'v3', cat: 'vip', name: 'Cược hiệu lực 100M', reward: 5000000, icon: 'fa-award', tar: 100000000, key: 'total_wager' },
+
+        // SỰ KIỆN
+        { id: 'e1', cat: 'event', name: 'Mời 3 bạn bè', reward: 150000, icon: 'fa-user-plus', tar: 3, key: 'invite_count' },
+        { id: 'e2', cat: 'event', name: 'Chia sẻ nhóm 5 lần', reward: 50000, icon: 'fa-share-nodes', tar: 5, key: 'share_count' }
+    ];
+
+    let currentTab = 'daily';
+
+    function init() {
+        onValue(ref(db, `users/${user}`), (snap) => {
+            const data = snap.val() || {};
+            document.getElementById('uBal').innerText = ((data.balance || 0)/1000).toFixed(2);
+            render(data);
+        });
+    }
+
+    function render(u) {
+        const box = document.getElementById('box');
+        box.innerHTML = '';
+        const list = db_missions.filter(m => m.cat === currentTab);
+
+        list.forEach(m => {
+            let cur = u[m.key] || 0;
+            if(m.key === 'is_online') cur = 1;
+            
+            const claimed = u.claimed_m?.[m.id] || false;
+            const per = Math.min((cur / m.tar) * 100, 100);
+            
+            let btn = `<button class="btn btn-go" onclick="location.href='home.html'">Làm</button>`;
+            if(per >= 100 && !claimed) btn = `<button class="btn btn-claim" onclick="claim('${m.id}', ${m.reward})">Nhận</button>`;
+            if(claimed) btn = `<button class="btn btn-done">Hoàn Tất</button>`;
+
+            box.innerHTML += `
+                <div class="card">
+                    <div class="card-inner">
+                        <div class="icon-box"><i class="fa-solid ${m.icon}"></i></div>
+                        <div class="info">
+                            <span class="name">${m.name}</span>
+                            <span class="reward">+${(m.reward/1000).toLocaleString()}k VND</span>
+                        </div>
+                        <div style="font-size:11px; font-weight:900; color:#444">${fmt(cur)}/${fmt(m.tar)}</div>
+                    </div>
+                    <div class="progress-sect">
+                        <div class="bar-bg"><div class="bar-fill" style="width:${per}%"></div></div>
+                        ${btn}
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    async function claim(id, amt) {
+        confetti({ particleCount: 150, spread: 60, origin: { y: 0.7 }, colors: ['#ff007f', '#ffd700'] });
+        const r = ref(db, `users/${user}`);
+        const s = await get(r);
+        if(s.exists()){
+            const b = s.val().balance || 0;
+            const up = {};
+            up[`balance`] = b + amt;
+            up[`claimed_m/${id}`] = true;
+            await update(r, up);
+            // Alert đẹp hơn có thể dùng SweetAlert2
+        }
+    }
+
+    function fmt(n) {
+        if(n >= 1000000) return (n/1000000).toFixed(1) + "M";
+        if(n >= 1000) return (n/1000).toFixed(0) + "k";
+        return n;
+    }
+
+    window.setTab = (t, el) => {
+        document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+        el.classList.add('active');
+        currentTab = t;
+        init();
+    };
+
+    init();
+</script>
+
+</body>
+</html>

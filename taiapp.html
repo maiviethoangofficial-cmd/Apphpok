@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+    <title>HPOK | TRUNG TÂM CÀI ĐẶT</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --p: #ff007f; --g: #00ff88; --bg: #050505; --card: rgba(255, 255, 255, 0.03); }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            margin: 0; font-family: 'Lexend', sans-serif; background: var(--bg); color: #fff;
+            background-image: radial-gradient(circle at 50% -20%, #200010 0%, #050505 80%);
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+        }
+
+        /* HEADER */
+        header { width: 100%; padding: 25px; display: flex; justify-content: space-between; align-items: center; }
+        .logo-small { font-weight: 900; letter-spacing: 2px; font-size: 14px; color: var(--p); }
+
+        /* HERO SECTION */
+        .hero { margin-top: 20px; text-align: center; width: 90%; }
+        .app-icon { 
+            width: 100px; height: 100px; background: linear-gradient(45deg, var(--p), #400); 
+            border-radius: 25px; margin: 0 auto 20px; display: flex; align-items: center; 
+            justify-content: center; font-size: 45px; font-weight: 900;
+            box-shadow: 0 15px 35px rgba(255, 0, 127, 0.4); border: 2px solid rgba(255,255,255,0.1);
+        }
+        h1 { font-size: 32px; font-weight: 900; margin: 0; letter-spacing: -1px; }
+        .sub-title { color: #666; font-size: 13px; margin-top: 5px; text-transform: uppercase; letter-spacing: 2px; }
+
+        /* THÔNG TIN APP */
+        .info-grid { 
+            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; 
+            width: 90%; margin: 30px 0; background: var(--card); padding: 15px; 
+            border-radius: 20px; border: 1px solid #151515;
+        }
+        .info-item b { display: block; font-size: 14px; color: #fff; }
+        .info-item span { font-size: 10px; color: #555; }
+
+        /* BOX CHỌN HỆ ĐIỀU HÀNH */
+        .select-os { width: 90%; max-width: 400px; }
+        .os-card { 
+            background: var(--card); border: 1px solid #1a1a1a; padding: 20px; 
+            border-radius: 25px; margin-bottom: 15px; display: flex; align-items: center; 
+            gap: 20px; text-decoration: none; color: #fff; transition: 0.3s;
+            position: relative; overflow: hidden;
+        }
+        .os-card:active { transform: scale(0.96); background: rgba(255,255,255,0.06); }
+        .os-card i { font-size: 35px; }
+        .os-card .os-info b { display: block; font-size: 18px; margin-bottom: 4px; }
+        .os-card .os-info span { font-size: 12px; color: #666; }
+        
+        /* HIỆU ỨNG RIÊNG */
+        .ios { border-left: 4px solid var(--p); }
+        .android { border-left: 4px solid var(--g); }
+        .arrow-icon { position: absolute; right: 20px; color: #333; }
+
+        /* FOOTER */
+        footer { margin-top: auto; padding: 30px; font-size: 11px; color: #444; text-align: center; }
+    </style>
+</head>
+<body>
+
+<header>
+    <i class="fa-solid fa-bars-staggered" style="font-size: 20px;"></i>
+    <div class="logo-small">HPOK <span style="color:#fff">ELITE</span></div>
+    <i class="fa-solid fa-circle-user" style="font-size: 20px;"></i>
+</header>
+
+<div class="hero">
+    <div class="app-icon">HP</div>
+    <h1>Trạm Cài Đặt</h1>
+    <div class="sub-title">Hệ thống phân phối App nội bộ</div>
+</div>
+
+<div class="info-grid">
+    <div class="info-item"><b>4.9 ★</b><span>Xếp hạng</span></div>
+    <div class="info-item"><b>120MB</b><span>Dung lượng</span></div>
+    <div class="info-item"><b>2026</b><span>Phiên bản</span></div>
+</div>
+
+<div class="select-os">
+    <a href="tai-ios.html" class="os-card ios">
+        <i class="fa-brands fa-apple"></i>
+        <div class="os-info">
+            <b>Cài đặt cho iPhone</b>
+            <span>Hỗ trợ iOS 12.0 trở lên (IPA)</span>
+        </div>
+        <i class="fa-solid fa-chevron-right arrow-icon"></i>
+    </a>
+
+    <a href="tai-android.html" class="os-card android">
+        <i class="fa-brands fa-android" style="color: var(--g);"></i>
+        <div class="os-info">
+            <b>Tải cho Android</b>
+            <span>Hỗ trợ Samsung, Oppo, Xiaomi (APK)</span>
+        </div>
+        <i class="fa-solid fa-chevron-right arrow-icon"></i>
+    </a>
+</div>
+
+<div style="width: 90%; background: rgba(0,210,255,0.05); border: 1px dashed #00d2ff; padding: 15px; border-radius: 15px; margin-top: 10px;">
+    <p style="margin:0; font-size: 11px; color: #00d2ff; text-align: left; line-height: 1.5;">
+        <i class="fa-solid fa-circle-exclamation"></i> <b>Lưu ý:</b> Vui lòng chọn đúng hệ điều hành của thiết bị để quá trình cài đặt diễn ra thành công và an toàn.
+    </p>
+</div>
+
+<footer>
+    &copy; 2026 HPOK SYSTEM BY MAI VIET HOANG<br>
+    Secure SSL Certified & encrypted
+</footer>
+
+<script>
+    // Tự động làm hiệu ứng rung nhẹ icon sau 2 giây để thu hút
+    setTimeout(() => {
+        document.querySelector('.app-icon').style.animation = "pulse 2s infinite";
+    }, 1000);
+    /* ============================================================
+   PREMIUM TYPEWRITER COPYRIGHT BY HOANG HAI PHONG 
+   ============================================================ */
+
+(function() {
+    const authorName = "MAI VIET HOANG (HPOK SYSTEM)";
+    const contactEmail = "Maiviethoangofficial@icloud.com";
+    const warningMsg = "WARNING: UNATHORIZED COPYING IS PROHIBITED.";
+    
+    function showTypewriterCopyright() {
+        console.clear();
+        
+        // Banner HPOK Nghệ thuật
+        console.log("%c   __    __  .______     ______    __  ___ \n  |  |  |  | |   _  \\   /  __  \\  |  |/  / \n  |  |__|  | |  |_)  | |  |  |  | |  '  /  \n  |   __   | |   ___/  |  |  |  | |    <   \n  |  |  |  | |  |      |  `--'  | |  .  \\  \n  |__|  |__| | _|       \\______/  |__|\\__\\ ", 
+        "color: #ff007f; font-weight: bold; text-shadow: 0 0 8px #ff007f;");
+
+        console.log("%c 🛡️ SYSTEM PROTECTED BY IT HOANG HAI PHONG ", "color: #fff; background: #ff007f; padding: 5px 15px; border-radius: 5px; font-weight: 900; margin-top: 10px;");
+
+        // Hiệu ứng Typewriter chạy ngầm
+        let i = 0;
+        let j = 0;
+        let k = 0;
+        let displayStr = "";
+        let emailStr = "";
+        let warnStr = "";
+
+        const typeInterval = setInterval(() => {
+            if (i < authorName.length) {
+                displayStr += authorName.charAt(i);
+                i++;
+            } else if (j < contactEmail.length) {
+                emailStr += contactEmail.charAt(j);
+                j++;
+            } else if (k < warningMsg.length) {
+                warnStr += warningMsg.charAt(k);
+                k++;
+            } else {
+                clearInterval(typeInterval);
+                console.log("%c© 2026 Hoàng Hải Phòng. All Rights Reserved.", "color: #444; font-size: 10px;");
+            }
+
+            // Cập nhật dòng chữ đang gõ vào Console
+            console.clear();
+            console.log("%c   __    __  .______     ______    __  ___ \n  |  |  |  | |   _  \\   /  __  \\  |  |/  / \n  |  |__|  | |  |_)  | |  |  |  | |  '  /  \n  |   __   | |   ___/  |  |  |  | |    <   \n  |  |  |  | |  |      |  `--'  | |  .  \\  \n  |__|  |__| | _|       \\______/  |__|\\__\\ ", "color: #ff007f; font-weight: bold;");
+            console.log("%c 🛡️ SYSTEM PROTECTED ", "color: #fff; background: #ff007f; padding: 5px 15px; border-radius: 5px; font-weight: 900;");
+            
+            console.log(`%c👤 TÁC GIẢ: %c${displayStr}_`, "color: #ffd700; font-weight: bold;", "color: #fff; background: #222; padding: 2px 5px;");
+            if (displayStr === authorName) {
+                console.log(`%c📧 LIÊN HỆ: %c${emailStr}_`, "color: #00d2ff; font-weight: bold;", "color: #fff;");
+            }
+            if (emailStr === contactEmail) {
+                console.log(`%c⚠️ THÔNG BÁO: %c${warnStr}`, "color: #ff0000; font-weight: bold;", "color: #888;");
+            }
+        }, 50); // Tốc độ gõ 50ms mỗi chữ
+    }
+
+    // Kích hoạt khi mở trang
+    showTypewriterCopyright();
+
+    // Tự động chạy lại sau mỗi 10 giây để khẳng định bản quyền
+    setInterval(showTypewriterCopyright, 10000);
+})();
+</script>
+
+<style>
+    @keyframes pulse {
+        0% { transform: scale(1); box-shadow: 0 15px 35px rgba(255, 0, 127, 0.4); }
+        50% { transform: scale(1.05); box-shadow: 0 15px 50px rgba(255, 0, 127, 0.6); }
+        100% { transform: scale(1); box-shadow: 0 15px 35px rgba(255, 0, 127, 0.4); }
+    }
+</style>
+
+</body>
+</html>

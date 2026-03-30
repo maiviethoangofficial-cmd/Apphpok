@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+    <title>HPOK CASINO | 3D LUCKY WHEEL</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root { --p: #ff007f; --g: #ffd700; --d: #050505; --card: #111; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            margin: 0; font-family: 'Lexend', sans-serif; background: var(--d); color: #fff; 
+            overflow-x: hidden; display: flex; flex-direction: column; align-items: center; 
+            background: radial-gradient(circle at top, #1a000f 0%, #050505 100%);
+            padding-bottom: 40px;
+        }
+
+        /* Header & Spin Status */
+        header { width: 100%; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); border-bottom: 2px solid var(--p); position: sticky; top: 0; z-index: 1000; }
+        .back-btn { color: #fff; font-size: 24px; text-decoration: none; }
+        .spin-status { background: rgba(255,0,127,0.1); padding: 6px 15px; border-radius: 25px; border: 1.5px solid var(--p); display: flex; align-items: center; gap: 8px; box-shadow: 0 0 10px var(--p); }
+        .spin-status b { color: #fff; font-size: 16px; font-weight: 900; }
+        .spin-status i { color: var(--g); animation: rotate-i 3s linear infinite; }
+        @keyframes rotate-i { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* ĐẾM NGƯỢC NHẬN LƯỢT */
+        .countdown-container {
+            width: 92%; margin-top: 15px; background: linear-gradient(90deg, #111, #222);
+            padding: 12px; border-radius: 15px; border: 1px dashed #444;
+            display: flex; justify-content: center; align-items: center; gap: 10px;
+        }
+        .countdown-container span { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+        .countdown-container b { color: var(--g); font-size: 16px; font-family: 'Courier New', Courier, monospace; letter-spacing: 2px; }
+
+        /* Paytable */
+        .paytable { width: 92%; margin-top: 20px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .prize-box { background: rgba(255,255,255,0.03); border: 1px solid #222; border-radius: 12px; padding: 10px 2px; text-align: center; }
+        .prize-box i { display: block; font-size: 16px; margin-bottom: 4px; color: var(--g); }
+        .prize-box span { font-size: 9px; color: #777; font-weight: 700; display: block; }
+        .prize-box b { font-size: 10px; color: #fff; }
+
+        /* 3D Wheel Stage */
+        .stage { position: relative; margin: 40px 0; width: 320px; height: 320px; perspective: 1000px; transform: rotateX(10deg); }
+        .led-rim { position: absolute; inset: -12px; border-radius: 50%; border: 3px dotted var(--p); opacity: 0.5; animation: rotate-i 20s linear infinite; }
+        
+        #wheel {
+            width: 100%; height: 100%; border-radius: 50%; border: 6px solid #222;
+            position: relative; transition: transform 6s cubic-bezier(0.1, 0, 0.1, 1);
+            transform-style: preserve-3d; background: #000; box-shadow: 0 20px 50px #000;
+        }
+        .slice {
+            position: absolute; width: 100%; height: 100%;
+            clip-path: polygon(50% 50%, 100% 14.6%, 100% 85.4%);
+            display: flex; align-items: center; justify-content: flex-end;
+            padding-right: 22px; font-weight: 900; font-size: 11px; text-transform: uppercase;
+        }
+
+        .center-btn {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) translateZ(30px);
+            width: 75px; height: 75px; background: radial-gradient(circle, #fff, #bbb);
+            border-radius: 50%; border: 4px solid #000; z-index: 100;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-weight: 900; color: #000; box-shadow: 0 5px 15px #000;
+        }
+
+        /* Task List */
+        .section-h { width: 92%; margin: 30px 0 15px; font-weight: 900; font-size: 16px; color: var(--p); letter-spacing: 1px; }
+        .task-list { width: 92%; display: flex; flex-direction: column; gap: 10px; }
+        .task { background: var(--card); border: 1px solid #222; border-radius: 18px; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; }
+        .task-content { display: flex; align-items: center; gap: 12px; }
+        .task-icon { width: 40px; height: 40px; background: rgba(255,0,127,0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--p); }
+        .task-info b { font-size: 13px; display: block; }
+        .task-info span { font-size: 10px; color: #666; }
+        .act-btn { background: var(--g); color: #000; border: none; padding: 7px 15px; border-radius: 10px; font-weight: 900; font-size: 11px; }
+
+        /* Toast */
+        #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); width: 85%; background: var(--p); padding: 15px; border-radius: 15px; text-align: center; font-weight: 900; transition: 0.5s; z-index: 2000; }
+        #toast.active { top: 20px; }
+    </style>
+</head>
+<body>
+
+<div id="toast">CHÚC MỪNG! BẠN TRÚNG <span id="toastVal">...</span></div>
+
+<header>
+    <a href="taikhoan.html" class="back-btn"><i class="fa-solid fa-chevron-left"></i></a>
+    <div class="spin-status">
+        <i class="fa-solid fa-ticket"></i>
+        <b>Lượt: <span id="spinCount">0</span></b>
+    </div>
+</header>
+
+<div class="countdown-container">
+    <span>Lượt tiếp theo sau:</span>
+    <b id="timer">00:00:00</b>
+</div>
+
+<div class="paytable">
+    <div class="prize-box"><i class="fa-solid fa-gem"></i><span>GIẢI 1</span><b>100K</b></div>
+    <div class="prize-box"><i class="fa-solid fa-crown"></i><span>VIP</span><b>JACKPOT</b></div>
+    <div class="prize-box"><i class="fa-solid fa-coins"></i><span>GIẢI 2</span><b>50K</b></div>
+    <div class="prize-box"><i class="fa-solid fa-gift"></i><span>FREE</span><b>+1 LƯỢT</b></div>
+</div>
+
+<div class="stage">
+    <div class="led-rim"></div>
+    <img src="https://cdn-icons-png.flaticon.com/512/8215/8215539.png" style="position:absolute; top:-30px; left:50%; transform:translateX(-50%); width:45px; z-index:200;">
+    <div id="wheel"></div>
+    <div class="center-btn" onclick="runSpin()">QUAY</div>
+</div>
+
+<div class="section-h">Nhiệm vụ nhận lượt</div>
+<div class="task-list">
+    <div class="task">
+        <div class="task-content">
+            <div class="task-icon"><i class="fa-solid fa-calendar-check"></i></div>
+            <div class="task-info"><b>Điểm danh ngày</b><span>Tặng 1 lượt mỗi ngày</span></div>
+        </div>
+        <button class="act-btn" onclick="alert('Đã nhận lượt miễn phí tự động!')">NHẬN</button>
+    </div>
+    <div class="task" onclick="window.location.href='naptien.html'">
+        <div class="task-content">
+            <div class="task-icon"><i class="fa-solid fa-wallet"></i></div>
+            <div class="task-info"><b>Nạp tích lũy</b><span>Nạp 50k tặng 1 lượt</span></div>
+        </div>
+        <button class="act-btn">NẠP</button>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const cfg = {
+        apiKey: "AIzaSyBD27MYenkjWOEjqj0hCisbh_61F_6bhSE",
+        databaseURL: "https://hpok-d355c-default-rtdb.asia-southeast1.firebasedatabase.app",
+    };
+    const app = initializeApp(cfg);
+    const db = getDatabase(app);
+    const user = localStorage.getItem("username") || "HOANG";
+
+    const prizes = [
+        { t: "100.000", v: 100000, bg: "#ff007f", c: "#fff" },
+        { t: "50.000", v: 50000, bg: "#151515", c: "#888" },
+        { t: "20.000", v: 20000, bg: "#ff007f", c: "#fff" },
+        { t: "JACKPOT", v: 1000000, bg: "#ffd700", c: "#000" },
+        { t: "10.000", v: 10000, bg: "#ff007f", c: "#fff" },
+        { t: "5.000", v: 5000, bg: "#151515", c: "#888" },
+        { t: "THÊM LƯỢT", v: -1, bg: "#ff007f", c: "#fff" },
+        { t: "88.000", v: 88000, bg: "#151515", c: "#fff" }
+    ];
+
+    const wheel = document.getElementById('wheel');
+    prizes.forEach((p, i) => {
+        const d = document.createElement('div');
+        d.className = 'slice';
+        d.style.transform = `rotate(${i * 45}deg)`;
+        d.style.background = p.bg; d.style.color = p.c;
+        d.innerHTML = `<span style="transform: rotate(22deg)">${p.t}</span>`;
+        wheel.appendChild(d);
+    });
+
+    let isBusy = false; let currRotation = 0;
+
+    // HÀM ĐẾM NGƯỢC
+    function startCountdown() {
+        setInterval(() => {
+            const now = new Date();
+            const tomorrow = new Date();
+            tomorrow.setHours(24, 0, 0, 0); // Đặt mốc 00:00:00 sáng mai
+
+            const diff = tomorrow - now;
+            const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
+            const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
+            const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+
+            document.getElementById('timer').innerText = `${h}:${m}:${s}`;
+            
+            // Nếu vừa chạm mốc 00:00:00, tải lại trang để nhận lượt mới
+            if (h === "00" && m === "00" && s === "00") {
+                location.reload();
+            }
+        }, 1000);
+    }
+
+    async function syncData() {
+        const today = new Date().toISOString().split('T')[0];
+        const r = ref(db, `users/${user}`);
+        const s = await get(r);
+        if (s.exists()) {
+            const data = s.val();
+            if (data.last_spin_gift !== today) {
+                await update(r, { spin_count: (data.spin_count || 0) + 1, last_spin_gift: today });
+            }
+        }
+        onValue(r, (snap) => {
+            const d = snap.val() || {};
+            document.getElementById('spinCount').innerText = d.spin_count || 0;
+        });
+    }
+
+    window.runSpin = async () => {
+        if (isBusy) return;
+        const r = ref(db, `users/${user}`);
+        const s = await get(r);
+        const d = s.val() || {};
+        if ((d.spin_count || 0) <= 0) return alert("Hết lượt! Chờ đồng hồ đếm ngược hoặc nạp thêm nhé.");
+
+        isBusy = true;
+        await update(r, { spin_count: d.spin_count - 1 });
+
+        const luck = [0, 0, 3, 7, 7, 2, 4, 6];
+        const winIdx = luck[Math.floor(Math.random() * luck.length)];
+        const stopAt = (360 - (winIdx * 45));
+        currRotation += (3600 + stopAt - (currRotation % 360));
+        wheel.style.transform = `rotate(${currRotation}deg)`;
+
+        setTimeout(async () => {
+            isBusy = false;
+            const res = prizes[winIdx];
+            if (res.v > 0) {
+                await update(r, { balance: (d.balance || 0) + res.v });
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            } else if (res.v === -1) {
+                await update(r, { spin_count: d.spin_count });
+            }
+            popToast(res.t);
+        }, 6500);
+    };
+
+    function popToast(val) {
+        const t = document.getElementById('toast');
+        document.getElementById('toastVal').innerText = val;
+        t.classList.add('active');
+        setTimeout(() => t.classList.remove('active'), 3500);
+    }
+
+    syncData();
+    startCountdown();
+</script>
+</body>
+</html>

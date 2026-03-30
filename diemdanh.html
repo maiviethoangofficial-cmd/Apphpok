@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+    <title>Điểm Danh Nhận Quà | HPOK</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root { --pink: #ff007f; --glow: rgba(255, 0, 127, 0.4); --dark: #000; --gold: #ffd700; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; font-family: 'Lexend', sans-serif; background: var(--dark); color: #fff; display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* Header */
+        header { padding: 20px; display: flex; justify-content: space-between; align-items: center; background: #111; border-bottom: 2px solid var(--pink); }
+        .back-btn { color: #fff; font-size: 20px; text-decoration: none; }
+        .title { font-size: 18px; font-weight: 900; letter-spacing: 1px; }
+        .title span { color: var(--pink); }
+
+        /* Banner */
+        .banner { 
+            margin: 20px; padding: 30px 20px; background: linear-gradient(135deg, #1a1a1a, #000);
+            border-radius: 25px; border: 1px solid #333; text-align: center; position: relative; overflow: hidden;
+        }
+        .banner::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, var(--glow) 0%, transparent 70%); pointer-events: none;
+        }
+        .banner i { font-size: 50px; color: var(--gold); text-shadow: 0 0 20px var(--gold); margin-bottom: 15px; }
+        .banner h1 { margin: 10px 0; font-size: 22px; font-weight: 900; }
+        .banner p { font-size: 13px; color: #888; margin: 0; }
+
+        /* Lịch Điểm Danh */
+        .calendar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 0 20px; margin-bottom: 30px; }
+        .day-card {
+            background: #161616; border-radius: 15px; padding: 15px 5px; text-align: center;
+            border: 1px solid #222; transition: 0.3s; position: relative;
+        }
+        .day-card.active { border-color: var(--pink); background: #200; box-shadow: 0 0 10px var(--glow); }
+        .day-card.claimed { opacity: 0.5; border-color: #444; }
+        .day-card.claimed i { color: #28a745 !important; }
+
+        .day-name { font-size: 11px; font-weight: 700; color: #666; margin-bottom: 8px; }
+        .day-reward { font-size: 13px; font-weight: 900; color: var(--gold); }
+        .day-icon { margin-bottom: 5px; color: #444; font-size: 18px; }
+        
+        /* Quà ngày 7 lớn nhất */
+        .day-7 { grid-column: span 2; background: linear-gradient(45deg, #200, #111); border: 1px dashed var(--gold); }
+
+        /* Button */
+        .btn-checkin {
+            margin: 0 20px; padding: 18px; border-radius: 15px; border: none;
+            background: var(--pink); color: #fff; font-size: 16px; font-weight: 900;
+            text-transform: uppercase; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 5px 20px var(--glow);
+        }
+        .btn-checkin:disabled { background: #333; box-shadow: none; cursor: not-allowed; color: #666; }
+
+        /* Stats */
+        .stats-row { display: flex; justify-content: space-around; padding: 30px 20px; }
+        .stat-box { text-align: center; }
+        .stat-box span { display: block; font-size: 20px; font-weight: 900; color: var(--pink); }
+        .stat-box label { font-size: 11px; color: #555; text-transform: uppercase; font-weight: 700; }
+
+        /* Bottom Nav (Trắng) */
+        .nav-bot { position: fixed; bottom: 0; width: 100%; max-width: 500px; height: 70px; background: #fff; display: flex; border-top: 1px solid #eee; z-index: 1000; }
+        .link { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: #bbb; font-size: 10px; font-weight: 700; }
+        .link i { font-size: 20px; margin-bottom: 4px; }
+        .link.active { color: var(--pink); }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="taikhoan.html" class="back-btn"><i class="fa-solid fa-chevron-left"></i></a>
+    <div class="title">ĐIỂM DANH <span>HÀNG NGÀY</span></div>
+    <div style="width: 20px;"></div>
+</header>
+
+<div class="banner">
+    <i class="fa-solid fa-gem"></i>
+    <h1>NHẬN THƯỞNG MỖI NGÀY</h1>
+    <p>Duy trì chuỗi điểm danh để nhận quà cực khủng lên đến 500k!</p>
+</div>
+
+<div class="calendar-grid" id="calendar">
+    </div>
+
+<button class="btn-checkin" id="checkinBtn" onclick="doCheckin()">ĐIỂM DANH NGAY</button>
+
+<div class="stats-row">
+    <div class="stat-box">
+        <span id="streakNum">0</span>
+        <label>Chuỗi ngày</label>
+    </div>
+    <div class="stat-box">
+        <span id="totalReceived">0k</span>
+        <label>Tổng đã nhận</label>
+    </div>
+</div>
+
+<nav class="nav-bot">
+    <a href="home.html" class="link"><i class="fa-solid fa-house"></i><span>Trang chủ</span></a>
+    <a href="naptien.html" class="link"><i class="fa-solid fa-wallet"></i><span>Nạp tiền</span></a>
+    <a href="nhiemvu.html" class="link"><i class="fa-solid fa-award"></i><span>Nhiệm vụ</span></a>
+    <a href="cskh.html" class="link"><i class="fa-solid fa-headset"></i><span>Hỗ trợ</span></a>
+    <a href="taikhoan.html" class="link active"><i class="fa-solid fa-user"></i><span>Cá nhân</span></a>
+</nav>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const cfg = {
+        apiKey: "AIzaSyBD27MYenkjWOEjqj0hCisbh_61F_6bhSE",
+        databaseURL: "https://hpok-d355c-default-rtdb.asia-southeast1.firebasedatabase.app",
+    };
+    const app = initializeApp(cfg);
+    const db = getDatabase(app);
+    const user = localStorage.getItem("username") || "HOANG";
+
+    const rewards = [10000, 20000, 30000, 50000, 80000, 100000, 200000];
+
+    function init() {
+        onValue(ref(db, `users/${user}`), (snap) => {
+            const data = snap.val() || {};
+            const streak = data.streak || 0;
+            const lastDate = data.last_checkin || "";
+            const today = new Date().toISOString().split('T')[0];
+
+            document.getElementById('streakNum').innerText = streak;
+            document.getElementById('totalReceived').innerText = (data.total_checkin_money / 1000 || 0) + "k";
+
+            renderCalendar(streak, lastDate === today);
+            
+            if(lastDate === today) {
+                document.getElementById('checkinBtn').innerText = "ĐÃ ĐIỂM DANH HÔM NAY";
+                document.getElementById('checkinBtn').disabled = true;
+            }
+        });
+    }
+
+    function renderCalendar(streak, isTodayDone) {
+        const box = document.getElementById('calendar');
+        box.innerHTML = '';
+        
+        for(let i = 1; i <= 7; i++) {
+            let statusClass = "";
+            let icon = "fa-circle-dot";
+
+            if(i <= streak) {
+                statusClass = "claimed active";
+                icon = "fa-circle-check";
+            } else if (i === streak + 1 && !isTodayDone) {
+                statusClass = "active";
+                icon = "fa-gift";
+            }
+
+            const isDay7 = i === 7 ? "day-7" : "";
+
+            box.innerHTML += `
+                <div class="day-card ${statusClass} ${isDay7}">
+                    <div class="day-name">Ngày ${i}</div>
+                    <div class="day-icon"><i class="fa-solid ${icon}"></i></div>
+                    <div class="day-reward">${rewards[i-1]/1000}k</div>
+                </div>
+            `;
+        }
+    }
+
+    window.doCheckin = async () => {
+        const r = ref(db, `users/${user}`);
+        const s = await get(r);
+        const data = s.val() || {};
+        const today = new Date().toISOString().split('T')[0];
+
+        if(data.last_checkin === today) return;
+
+        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#ff007f', '#ffd700'] });
+
+        let newStreak = (data.streak || 0) + 1;
+        if(newStreak > 7) newStreak = 1; // Reset chuỗi sau 7 ngày
+
+        const reward = rewards[newStreak - 1];
+        const updates = {};
+        updates['balance'] = (data.balance || 0) + reward;
+        updates['streak'] = newStreak;
+        updates['last_checkin'] = today;
+        updates['total_checkin_money'] = (data.total_checkin_money || 0) + reward;
+
+        await update(r, updates);
+        alert(`Điểm danh thành công ngày ${newStreak}! Nhận ngay ${reward/1000}k VND.`);
+    }
+
+    init();
+</script>
+</body>
+</html>

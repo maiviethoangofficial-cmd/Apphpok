@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+    <title>RÚT TIỀN HPOK</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root { --pink: #ff4d94; --momo: #a50064; --bg: #070707; --gold: #ffca28; --blue: #00d2ff; --green: #2ecc71; --red: #ff4757; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { margin: 0; font-family: 'Lexend', sans-serif; background: var(--bg); color: #fff; padding-bottom: 120px; overflow-x: hidden; }
+
+        /* ANIMATIONS */
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes shine { from { left: -100%; } to { left: 100%; } }
+        @keyframes pulse-gold { 0%, 100% { opacity: 0.7; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } }
+        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        /* HEADER & TICKER */
+        .ticker-wrap { background: rgba(255, 77, 148, 0.05); padding: 8px 0; border-bottom: 1px solid #1a1a1a; font-size: 10px; color: var(--pink); font-weight: 800; overflow: hidden; }
+        .ticker-move { display: inline-block; white-space: nowrap; animation: ticker 25s linear infinite; }
+
+        header { padding: 15px; background: rgba(0,0,0,0.9); backdrop-filter: blur(15px); display: flex; align-items: center; border-bottom: 1px solid #222; position: sticky; top: 0; z-index: 1000; }
+        header h2 { font-size: 14px; margin: 0; flex: 1; text-align: center; font-weight: 900; letter-spacing: 2px; color: #fff; text-shadow: 0 0 10px var(--pink); }
+
+        /* SỐ DƯ LUXURY */
+        .balance-card { margin: 15px; background: #111; border-radius: 30px; padding: 30px 15px; text-align: center; border: 1px solid #222; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .balance-card::after { content: ""; position: absolute; width: 50px; height: 100%; background: rgba(255,255,255,0.03); top: 0; transform: skewX(-20deg); animation: shine 3s infinite; }
+        .bal-val { font-size: 42px; font-weight: 900; color: #fff; }
+        .bal-val span { color: var(--gold); font-size: 20px; margin-left: 5px; }
+
+        /* THANH LOAD CƯỢC NEON (PHẦN CŨ) */
+        .status-area { padding: 0 15px 15px; }
+        .p-card { background: rgba(255,255,255,0.03); border-radius: 20px; padding: 15px; border: 1px solid #1a1a1a; margin-bottom: 10px; }
+        .p-info { display: flex; justify-content: space-between; font-size: 10px; font-weight: 900; margin-bottom: 8px; color: #888; }
+        .p-track { height: 10px; background: #000; border-radius: 20px; overflow: hidden; border: 1px solid #222; }
+        .p-bar { height: 100%; width: 0%; transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
+        .p-bar::after { content: ""; position: absolute; top:0; left:0; right:0; bottom:0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); animation: shine 2s infinite; }
+        .bar-pink { background: linear-gradient(90deg, #ff007a, #ff4d94); box-shadow: 0 0 10px rgba(255, 77, 148, 0.4); }
+        .bar-blue { background: linear-gradient(90deg, #00d2ff, #3a7bd5); box-shadow: 0 0 10px rgba(0, 210, 255, 0.4); }
+
+        /* PHƯƠNG THỨC RÚT */
+        .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 15px 15px; }
+        .method-item { background: #111; border: 1px solid #222; border-radius: 22px; padding: 20px; text-align: center; transition: 0.3s; position: relative; }
+        .method-item i { font-size: 28px; display: block; margin-bottom: 8px; color: #333; }
+        .method-item.active-bank { border-color: var(--pink); background: rgba(255, 77, 148, 0.05); }
+        .method-item.active-bank i { color: var(--pink); animation: pulse-gold 1.5s infinite; }
+        .method-item.active-momo { border-color: var(--momo); background: rgba(165, 0, 100, 0.1); }
+        .method-item.active-momo i { color: #ff00d4; animation: pulse-gold 1.5s infinite; }
+
+        /* FORM NHẬP ĐỘNG */
+        .form-luxury { background: #111; border-radius: 30px; padding: 25px; border: 1px solid #222; margin: 0 15px 20px; }
+        .input-box { margin-bottom: 20px; }
+        .input-box label { display: block; font-size: 11px; color: var(--gold); font-weight: 900; margin-bottom: 8px; letter-spacing: 1px; }
+        .input-box input, .input-box select { 
+            background: #000; border: 1px solid #222; color: #fff; width: 100%; padding: 16px; border-radius: 16px; 
+            font-size: 14px; font-weight: 700; transition: 0.3s;
+        }
+        .input-box input:focus { border-color: var(--pink); background: #080808; box-shadow: 0 0 15px rgba(255, 77, 148, 0.1); }
+        .amt-big { font-size: 35px !important; color: var(--pink) !important; text-align: center; border: none !important; background: transparent !important; }
+
+        /* NÚT RÚT TIỀN */
+        .btn-glow { 
+            background: linear-gradient(135deg, #ff007a, #ff4d94); color: #fff; width: calc(100% - 30px); margin: 0 15px; 
+            padding: 22px; border: none; border-radius: 25px; font-weight: 900; font-size: 17px; box-shadow: 0 10px 30px rgba(255, 77, 148, 0.4); 
+        }
+        .btn-glow:disabled { opacity: 0.2; filter: grayscale(1); }
+
+        /* LỊCH SỬ ĐỘNG (FADE IN) */
+        .his-title { padding: 15px 20px; font-size: 13px; font-weight: 900; color: var(--gold); display: flex; justify-content: space-between; }
+        .his-card { 
+            background: #111; margin: 0 15px 12px; padding: 18px; border-radius: 25px; border: 1px solid #222;
+            border-left: 4px solid #222; animation: slideUp 0.6s ease-out backwards; transition: 0.3s;
+        }
+        .his-card:active { transform: scale(0.96); border-color: var(--pink); }
+        .stt-0-glow { border-left-color: var(--gold); box-shadow: 0 0 15px rgba(255, 202, 40, 0.05); }
+        .stt-1-glow { border-left-color: var(--green); }
+        
+        .tag-status { font-size: 9px; padding: 4px 10px; border-radius: 8px; font-weight: 900; }
+        .s0 { background: rgba(255,202,40,0.1); color: var(--gold); }
+        .s1 { background: rgba(46,204,113,0.1); color: var(--green); }
+        
+        .btn-support { font-size: 10px; color: var(--blue); text-decoration: none; display: flex; align-items: center; gap: 5px; margin-top: 15px; padding: 8px 12px; background: rgba(0, 210, 255, 0.05); border-radius: 12px; width: fit-content; }
+
+        .nav-bar { position: fixed; bottom: 0; width: 100%; max-width: 450px; background: #000; display: flex; padding: 12px 0; border-top: 1px solid #222; }
+        .nav-link { flex: 1; text-align: center; text-decoration: none; color: #444; font-size: 11px; font-weight: 700; }
+        .nav-link.active { color: var(--pink); }
+    </style>
+</head>
+<body>
+
+<div class="ticker-wrap"><div class="ticker-move">Hệ thống thanh toán tự động 24/24 • Người chơi ***k8 rút 2.000.000₫ về ngân hàng• Ví MOMO đang ưu tiên duyệt nhanh • Chào mừng bạn đến với HPOK OFFICIAL...</div></div>
+
+<header>
+    <a href="home.html" style="color:#fff; width:40px;"><i class="fa-solid fa-chevron-left"></i></a>
+    <h2>RÚT TIỀN TRỰC TUYẾN</h2>
+</header>
+
+<div class="balance-card">
+    <small style="color:#244; font-weight:900; font-size:16px; letter-spacing:2px;">SỐ DƯ HIỆN TẠI (VNĐ)</small>
+    <div class="bal-val" id="userBal">0 <span>₫</span></div>
+</div>
+
+<div class="status-area">
+    <div class="p-card">
+        <div class="p-info"><span><i class="fa-solid fa-bolt" style="color:var(--pink)"></i> VÒNG CƯỢC NẠP (X2)</span><b id="txtDep">0%</b></div>
+        <div class="p-track"><div class="p-bar bar-pink" id="barDep"></div></div>
+    </div>
+    <div class="p-card">
+        <div class="p-info"><span><i class="fa-solid fa-crown" style="color:var(--blue)"></i> VÒNG CƯỢC THƯỞNG (X40)</span><b id="txtBon">0%</b></div>
+        <div class="p-track"><div class="p-bar bar-blue" id="barBon"></div></div>
+    </div>
+</div>
+
+<div class="method-grid">
+    <div onclick="switchPay('bank')" id="tabBank" class="method-item active-bank"><i class="fa-solid fa-building-columns"></i><span style="font-size:11px; font-weight:900;">NGÂN HÀNG</span></div>
+    <div onclick="switchPay('momo')" id="tabMomo" class="method-item"><i class="fa-solid fa-wallet"></i><span style="font-size:11px; font-weight:900;">VÍ MOMO</span></div>
+</div>
+
+<div class="form-luxury">
+    <div class="input-box">
+        <label><i class="fa-solid fa-money-bill-wave"></i> SỐ TIỀN MUỐN RÚT</label>
+        <input type="number" id="amt" class="amt-big" placeholder="0" oninput="validate()">
+    </div>
+    <div class="input-box" id="bankArea">
+      <label><i class="fa-solid fa-university"></i> NGÂN HÀNG</label>
+<select id="bankName">
+    <option value="ACB">ACB - Ngân hàng Á Châu</option>
+    <option value="AGRIBANK">Agribank - Ngân hàng Nông nghiệp & PTNT</option>
+    <option value="BIDV">BIDV - Ngân hàng Đầu tư & Phát triển</option>
+    <option value="VIETCOMBANK">Vietcombank - Ngân hàng Ngoại thương</option>
+    <option value="VPBANK">VPBank - Ngân hàng Việt Nam Thịnh Vượng</option>
+    <option value="TECHCOMBANK">Techcombank - Ngân hàng Kỹ Thương</option>
+    <option value="MBBANK">MB Bank - Ngân hàng Quân Đội</option>
+    <option value="SCB">SCB - Ngân hàng Sài Gòn</option>
+    <option value="TPBANK">TPBank - Ngân hàng Tiên Phong</option>
+    <option value="VIB">VIB - Ngân hàng Quốc tế</option>
+    <option value="OCB">OCB - Ngân hàng Phương Đông</option>
+    <option value="SHB">SHB - Ngân hàng Sài Gòn Hà Nội</option>
+    <option value="HDBANK">HDBank - Ngân hàng Phát triển Nhà TPHCM</option>
+    <option value="EXIMBANK">Eximbank - Ngân hàng Xuất nhập khẩu</option>
+    <option value="SEABANK">SeABank - Ngân hàng Đông Nam Á</option>
+    <option value="NAMABANK">Nam A Bank - Ngân hàng Nam Á</option>
+    <option value="LIENVIETPOSTBANK">LienVietPostBank - Ngân hàng Bưu Điện Liên Việt</option>
+    <option value="PVCOMBANK">PVcomBank - Ngân hàng Đại Chúng PVcomBank</option>
+    <option value="BACABANK">Bac A Bank - Ngân hàng Bắc Á</option>
+    <option value="KIENLONGBANK">Kienlong Bank - Ngân hàng Kiên Long</option>
+    <option value="BABANK">Bảo Việt Bank</option>
+    <option value="SAIGONBANK">SaigonBank - Ngân hàng Sài Gòn Công Thương</option>
+    <option value="PGBANK">PG Bank - Ngân hàng Xăng dầu Petrolimex</option>
+    <option value="VCCBANK">VCC Bank - Ngân hàng Việt Capital</option>
+    <option value="MSB">MSB - Ngân hàng Hàng Hải Việt Nam</option>
+    <option value="NCB">NCB - Ngân hàng Quốc Dân</option>
+    <option value="OCB">OCB - Ngân hàng Phương Đông</option>
+    <option value="PVBANK">PVBank - Ngân hàng Dầu khí Toàn Cầu</option>
+    <option value="SHBVN">SHB Việt Nam</option>
+    <option value="VRB">VRB - Ngân hàng Liên doanh Việt Nga</option>
+</select>
+    </div>
+    <div class="input-box">
+        <label id="lblStk"><i class="fa-solid fa-hashtag"></i> SỐ TÀI KHOẢN</label>
+        <input type="number" id="targetStk" placeholder="Nhập số tài khoản...">
+    </div>
+    <div class="input-box">
+        <label><i class="fa-solid fa-user-circle"></i> CHỦ TÀI KHOẢN</label>
+        <input type="text" id="targetUser" placeholder="TÊN VIẾT HOA KHÔNG DẤU">
+    </div>
+    <div class="input-box">
+        <label><i class="fa-solid fa-shield-keyhole"></i> MÃ PIN BẢO MẬT</label>
+        <input type="password" id="pinCode" maxlength="6" style="text-align:center; letter-spacing:12px;" placeholder="••••••" oninput="validate()">
+    </div>
+</div>
+
+<button class="btn-glow" id="btnMain" onclick="doAction()" disabled>XÁC NHẬN GIAO DỊCH</button>
+
+<div class="his-title">
+    <span><i class="fa-solid fa-history"></i> LỊCH SỬ 1 NĂM</span>
+    <a href="cskh.html" style="color:var(--pink); text-decoration:none; font-size:11px;">HỖ TRỢ KHÁCH HÀNG</a>
+</div>
+<div id="historyList" style="padding-bottom:50px;"></div>
+
+<nav class="nav-bar">
+    <a href="home.html" class="nav-link"><i class="fa-solid fa-house" style="font-size:20px; display:block;"></i>Home</a>
+    <a href="naptien.html" class="nav-link active"><i class="fa-solid fa-wallet" style="font-size:20px; display:block;"></i>Finance</a>
+    <a href="taikhoan.html" class="nav-link"><i class="fa-solid fa-user" style="font-size:20px; display:block;"></i>Account</a>
+</nav>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, get, set, update, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBD27MYenkjWOEjqj0hCisbh_61F_6bhSE",
+        authDomain: "hpok-d355c.firebaseapp.com",
+        databaseURL: "https://hpok-d355c-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "hpok-d355c"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const user = localStorage.getItem("username") || "Guest";
+
+    let balance = 0; let isOk = false; let mode = 'bank';
+
+    window.switchPay = (m) => {
+        mode = m;
+        document.getElementById('tabBank').className = 'method-item' + (m === 'bank' ? ' active-bank' : '');
+        document.getElementById('tabMomo').className = 'method-item' + (m === 'momo' ? ' active-momo' : '');
+        document.getElementById('bankArea').style.display = (m === 'momo') ? 'none' : 'block';
+        document.getElementById('lblStk').innerHTML = (m === 'momo') ? '<i class="fa-solid fa-mobile-screen"></i> SĐT MOMO' : '<i class="fa-solid fa-hashtag"></i> SỐ TÀI KHOẢN';
+    };
+
+    async function init() {
+        const snap = await get(ref(db, `users/${user}`));
+        if(snap.exists()) {
+            const d = snap.val();
+            balance = d.balance || 0;
+            animateNum('userBal', balance);
+            
+            const dp = Math.min(((d.totalBet || 0) / ((d.totalDeposit || 1) * 2)) * 100, 100);
+            const bp = Math.min(((d.totalBet || 0) / ((d.totalBonus || 1) * 40)) * 100, 100);
+            
+            setTimeout(() => {
+                document.getElementById('barDep').style.width = dp + "%";
+                document.getElementById('txtDep').innerText = Math.floor(dp) + "%";
+                document.getElementById('barBon').style.width = bp + "%";
+                document.getElementById('txtBon').innerText = Math.floor(bp) + "%";
+            }, 500);
+
+            if(dp >= 100 && bp >= 100) isOk = true;
+        }
+        loadHistory();
+    }
+
+    async function loadHistory() {
+        const hSnap = await get(ref(db, `withdraws/${user}`));
+        const list = document.getElementById('historyList');
+        list.innerHTML = "";
+        if(hSnap.exists()) {
+            Object.values(hSnap.val()).reverse().forEach((h, i) => {
+                const sText = h.status === 0 ? "CHỜ DUYỆT" : (h.status === 1 ? "THÀNH CÔNG" : "TỪ CHỐI");
+                list.innerHTML += `
+                    <div class="his-card stt-${h.status}-glow" style="animation-delay: ${i * 0.1}s">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <b style="font-size:13px; color:#fff;">${h.bank}</b>
+                            <span class="tag-status s${h.status}">${sText}</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:12px;">
+                            <div>
+                                <span style="font-size:9px; color:#444; display:block;">REF: #WL${h.time.toString().slice(-6)}</span>
+                                <span style="font-size:10px; color:#555;">${new Date(h.time).toLocaleString()}</span>
+                            </div>
+                            <b style="color:var(--pink); font-size:18px;">-${h.amount.toLocaleString()}₫</b>
+                        </div>
+                        <a href="cskh.html?ref=${h.time}" class="btn-support"><i class="fa-solid fa-headset"></i> Khiếu nại</a>
+                    </div>`;
+            });
+        }
+    }
+
+    window.doAction = async () => {
+        const amt = parseInt(document.getElementById('amt').value);
+        if(amt < 300000 || amt > balance) return alert("Số tiền không hợp lệ!");
+        document.getElementById('btnMain').disabled = true;
+        document.getElementById('btnMain').innerText = "ĐANG XÁC THỰC SINH TRẮC HỌC...";
+        
+        setTimeout(async () => {
+            try {
+                const bName = mode === 'momo' ? 'VÍ MOMO' : document.getElementById('bankName').value;
+                await set(push(ref(db, `withdraws/${user}`)), { amount: amt, bank: bName, time: Date.now(), status: 0 });
+                await update(ref(db, `users/${user}`), { balance: balance - amt });
+                confetti({ particleCount: 200, spread: 80, origin: { y: 0.8 } });
+                alert("Gửi lệnh rút thành công! Vui lòng chờ phê duyệt.");
+                location.reload();
+            } catch (e) { alert("Lỗi kết nối!"); }
+        }, 1200);
+    };
+
+    function animateNum(id, val) {
+        let s = 0; let st = Math.ceil(val/25);
+        let t = setInterval(() => { s += st; if(s >= val) { s = val; clearInterval(t); } document.getElementById(id).innerHTML = s.toLocaleString() + " <span>₫</span>"; }, 30);
+    }
+
+    window.validate = () => {
+        const a = document.getElementById('amt').value;
+        const p = document.getElementById('pinCode').value;
+        document.getElementById('btnMain').disabled = !(a >= 300000 && p.length === 6 && isOk);
+    };
+
+    init();
+</script>
+</body>
+</html>

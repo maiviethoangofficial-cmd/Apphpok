@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+    <title>HPOK - HỆ THỐNG CSKH SIÊU CẤP</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;900&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: linear-gradient(135deg, #FFD700 0%, #FDB931 50%, #8A6E2F 100%);
+            --gold-solid: #FDB931;
+            --teal: #00bfa5; --bg: #0b0b0b; --card: #1c1c1c; --border: #2a2a2a;
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body {
+            margin: 0; font-family: 'Inter', sans-serif; background: var(--bg);
+            color: #fff; overflow: hidden; height: 100vh; display: flex; flex-direction: column;
+        }
+        
+        #loadingBar { position: fixed; top: 0; left: 0; height: 6px; width: 0; background: var(--gold); z-index: 9999; transition: width 0.4s ease; }
+
+        .screen { display: none; height: 100vh; flex-direction: column; background: var(--bg); flex: 1; overflow: hidden; }
+        .active { display: flex; animation: fadeIn 0.3s ease; }
+        
+        /* HIỆU ỨNG LOGO ÁNH KIM CHẠY */
+        .branding { padding: 25px 20px 10px; text-align: center; flex-shrink: 0; }
+        .hpok-logo { 
+            font-family: 'Lexend', sans-serif; font-size: 45px; font-weight: 900; 
+            background: linear-gradient(90deg, #FFD700, #fff, #FDB931, #8A6E2F, #FFD700);
+            background-size: 200% auto;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin: 0; filter: drop-shadow(0 0 10px rgba(253, 185, 49, 0.3));
+            animation: shine 3s linear infinite;
+        }
+        @keyframes shine { to { background-position: 200% center; } }
+        
+        .sub-text { font-size: 10px; font-weight: 700; color: var(--teal); letter-spacing: 2px; text-transform: uppercase; margin-top: 5px; }
+
+        /* FIX LỖI CUỘN KHÔNG BỊ CHE */
+        .grid-container { padding: 10px 15px 180px; overflow-y: auto; flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .detail-list-container { padding: 10px 15px 180px; overflow-y: auto; flex: 1; }
+
+        .menu-item { 
+            background: var(--card); padding: 22px 10px; border-radius: 18px;
+            display: flex; flex-direction: column; align-items: center; gap: 12px;
+            border: 1px solid var(--border); transition: 0.3s;
+        }
+        .menu-item:active { transform: scale(0.92); border-color: var(--teal); }
+        .menu-item i { font-size: 28px; }
+        .menu-item b { font-size: 11.5px; text-transform: uppercase; color: #eee; text-align: center; }
+        
+        .lead-box { background: rgba(0, 191, 165, 0.1); border-radius: 12px; padding: 10px; margin: 10px 20px; border-left: 4px solid var(--teal); flex-shrink: 0; }
+        .lead-box span { font-size: 11.5px; color: #eee; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+
+        .footer-dashboard {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: rgba(10, 10, 10, 0.98); backdrop-filter: blur(15px);
+            padding: 8px 10px 8px; border-top: 2px solid #222; z-index: 100;
+        }
+        .stats-row { display: flex; justify-content: space-around; margin-bottom: 15px; }
+        .stat-item { 
+            background: #1a1a1a; padding: 10px 18px; border-radius: 30px; 
+            display: flex; align-items: center; gap: 10px; border: 1px solid #333;
+        }
+        .stat-item b { font-size: 16px; color: var(--gold-solid); font-weight: 800; min-width: 35px; text-align: center; }
+        .dot-blink { width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; animation: blink 1.2s infinite; box-shadow: 0 0 8px #2ecc71; }
+
+        .animated-text {
+            background: linear-gradient(90deg, #888, #fff, #FDB931, #00bfa5, #888);
+            background-size: 200% auto;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: flowText 4s linear infinite;
+            font-weight: 700; font-size: 10px; text-align: center; letter-spacing: 0.5px;
+        }
+        .copyright-text { margin-top: 8px; font-size: 9px; letter-spacing: 1.5px; text-align: center; color: #555; animation: pulseText 3s infinite; }
+
+        /* MÀN HÌNH CHAT */
+        #chatBody { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; background: #080808; padding-bottom: 50px; }
+        .msg { max-width: 85%; padding: 12px 16px; font-size: 14px; border-radius: 18px; line-height: 1.4; }
+        .msg-bot { background: #222; align-self: flex-start; color: #ddd; border: 1px solid #333; }
+        .msg-user { background: var(--teal); align-self: flex-end; color: #fff; font-weight: 600; }
+        .chat-input-area { background: #111; padding: 10px 15px 35px; display: flex; align-items: center; gap: 10px; border-top: 1px solid #222; }
+
+        /* CHI TIẾT CARD */
+        .detail-card { 
+            background: linear-gradient(145deg, #1f1f1f, #151515); padding: 20px; border-radius: 15px; margin-bottom: 12px;
+            border: 1px solid #2a2a2a; display: flex; justify-content: space-between; align-items: center; animation: slideUp 0.4s ease forwards;
+        }
+        .detail-card::before { content: ''; width: 4px; height: 20px; background: var(--gold-solid); border-radius: 2px; margin-right: 10px; }
+        .chevron-circle { width: 26px; height: 26px; background: rgba(0, 191, 165, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--teal); font-size: 10px; }
+
+        @keyframes flowText { to { background-position: 200% center; } }
+        @keyframes pulseText { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+        @keyframes blink { 0%, 100% { opacity: 0.4; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.1); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<div id="loadingBar"></div>
+
+<div id="screen1" class="screen active">
+    <div class="branding">
+        <h1 class="hpok-logo">HPOK</h1>
+        <div class="sub-text">Chăm sóc khách hàng Online</div>
+    </div>
+    <div class="lead-box">
+        <span><i class="fa-solid fa-hand-point-down"></i> Chọn vấn đề Anh/Chị đang gặp phải:</span>
+    </div>
+       <div class="grid-container">
+        <div class="menu-item" onclick="startLoad('nap')"><i class="fa-solid fa-wallet" style="color:#FFD700"></i><b>Nạp Tiền</b></div>
+        <div class="menu-item" onclick="startLoad('rut')"><i class="fa-solid fa-building-columns" style="color:#00bfa5"></i><b>Rút Tiền</b></div>
+        <div class="menu-item" onclick="startLoad('tk')"><i class="fa-solid fa-user-shield" style="color:#ff4444"></i><b>Tài Khoản</b></div>
+        <div class="menu-item" onclick="startLoad('km')"><i class="fa-solid fa-gift" style="color:#ff8c00"></i><b>Khuyến Mãi</b></div>
+        <div class="menu-item" onclick="startLoad('game')"><i class="fa-solid fa-gamepad" style="color:#9d4edd"></i><b>Sảnh Game</b></div>
+        <div class="menu-item" onclick="startLoad('app')"><i class="fa-solid fa-mobile-screen" style="color:#4cc9f0"></i><b>Tải App</b></div>
+        <div class="menu-item" onclick="startLoad('vip')"><i class="fa-solid fa-crown" style="color:#FFD700"></i><b>Hội Viên VIP</b></div>
+        <div class="menu-item" onclick="startLoad('dl')"><i class="fa-solid fa-handshake-angle" style="color:#00bfa5"></i><b>Đại Lý</b></div>
+        <div class="menu-item" onclick="startLoad('xs')"><i class="fa-solid fa-wand-magic-sparkles" style="color:#ff007f"></i><b>Xổ Số AI</b></div>
+        <div class="menu-item" onclick="startLoad('pl')"><i class="fa-solid fa-scale-balanced" style="color:#f1c40f"></i><b>Pháp Lý</b></div>
+        <div class="menu-item" onclick="startLoad('sec')"><i class="fa-solid fa-shield-halved" style="color:#e74c3c"></i><b>Bảo Mật 2FA</b></div>
+        <div class="menu-item" onclick="startLoad('evt')"><i class="fa-solid fa-fire-flame-curved" style="color:#ff3300"></i><b>Sự Kiện Hot</b></div>
+        <div class="menu-item" onclick="startLoad('bank')"><i class="fa-solid fa-credit-card" style="color:#2ecc71"></i><b>Thêm Thẻ</b></div>
+        <div class="menu-item" onclick="startLoad('oth')"><i class="fa-solid fa-circle-question" style="color:#95a5a6"></i><b>Hỗ Trợ Khác</b></div>
+    </div>
+</div>
+
+<div id="screen2" class="screen">
+    <div style="background: #111; padding: 15px; display: flex; align-items: center; border-bottom: 1px solid #222; flex-shrink:0;">
+        <i class="fa-solid fa-arrow-left" onclick="backTo(1)" style="color:var(--gold-solid); font-size: 20px;"></i>
+        <div id="s2-title" style="flex:1; text-align:center; font-weight:800; font-size:14px; text-transform: uppercase;">CHI TIẾT HỖ TRỢ</div>
+    </div>
+    <div id="s2-list" class="detail-list-container"></div>
+</div>
+
+<div id="screen3" class="screen">
+    <div style="background: #111; padding: 12px 15px; display: flex; align-items: center; border-bottom: 1px solid #222; flex-shrink:0;">
+        <i class="fa-solid fa-chevron-left" onclick="backTo(2)" style="color:var(--gold-solid); font-size: 22px;"></i>
+        <img id="staffImg" src="" style="width:40px; height:40px; border-radius:50%; margin: 0 12px; border: 2px solid var(--teal);">
+        <div style="flex:1;">
+            <div id="staffName" style="font-weight:800; font-size:14px;">Chuyên Viên</div>
+            <div style="font-size:9px; color:var(--teal); font-weight:800; display:flex; align-items:center; gap:4px;">
+                <span style="width:6px; height:6px; background:#2ecc71; border-radius:50%;"></span> ĐANG TRỰC TUYẾN
+            </div>
+        </div>
+    </div>
+    <div id="chatBody"></div>
+    <div class="chat-input-area">
+        <div style="flex:1; background:#222; border-radius:30px; padding:12px 20px;">
+            <input type="text" id="chatInput" placeholder="Nhập tin nhắn..." style="width:100%; border:none; background:transparent; color:#fff;">
+        </div>
+        <div onclick="sendMsg()" style="width:48px; height:48px; background:var(--gold); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#000;"><i class="fa-solid fa-paper-plane"></i></div>
+    </div>
+</div>
+
+<div class="footer-dashboard" id="mainFooter">
+    <div class="stats-row">
+        <div class="stat-item">
+            <span class="dot-blink"></span>
+            <div style="display:flex; flex-direction:column;">
+                <small style="font-size: 9px; color:#888;">NHÂN VIÊN TRỰC</small>
+                <b id="countStaff">0</b>
+            </div>
+        </div>
+        <div class="stat-item">
+            <i class="fa-solid fa-bolt-lightning" style="color:#FFD700;"></i>
+            <div style="display:flex; flex-direction:column;">
+                <small style="font-size: 9px; color:#888;">PHẢN HỒI</small>
+                <b>&lt; 15s</b>
+            </div>
+        </div>
+    </div>
+    <div class="animated-text">BẢO MẬT CHUẨN QUỐC TẾ SSL & PAGCOR</div>
+    <p class="copyright-text">© 2026 HPOK GLOBAL SYSTEM • V3.5.0</p>
+</div>
+
+<script>
+    let currentStaff = 156; 
+// DỮ LIỆU ĐẦY ĐỦ CẢ 14 NHÓM
+    const fullData = {
+        nap: [
+            { t: "Nạp chậm (Quá 5p)", m: "Dạ Anh/Chị gửi Bill chuyển khoản để em kiểm tra ngay ạ!" },
+            { t: "Quên nội dung nạp", m: "Anh/Chị cung cấp ID và STK nạp để em đối soát thủ công ạ." },
+            { t: "Lỗi QR Bank", m: "Dạ Anh/Chị hãy nhập tay STK nếu mã QR không quét được ạ." },
+            { t: "Nạp sai số tiền", m: "Anh/Chị gửi Bill, em cộng đúng số tiền thực tế cho mình ạ." }
+        ],
+        rut: [
+            { t: "Đơn rút chờ duyệt", m: "Dạ đơn rút đang được kiểm toán, Anh/Chị vui lòng đợi ạ." },
+            { t: "Ngân hàng bảo trì", m: "Dạ ngân hàng bảo trì, mình vui lòng rút qua thẻ khác ạ." }
+        ],
+        tk: [
+            { t: "Quên mật khẩu", m: "Anh/Chị cung cấp SĐT đăng ký để em lấy lại mật khẩu ạ." },
+            { t: "Khóa tài khoản", m: "Anh/Chị cung cấp ID để em kiểm tra lý do khóa ạ." }
+        ],
+        km: [{t:"Nhận Code 100K", m:"Dạ Anh/Chị gửi ảnh liên kết ngân hàng để em phát Code ạ."}],
+        game: [{t:"Lỗi sảnh game", m:"Anh/Chị thoát app vào lại hoặc xóa cache trình duyệt ạ."}],
+        app: [{t:"Lỗi tải iOS", m:"Dạ Anh/Chị vào Cài đặt -> Tin cậy cấu hình để mở app ạ."}],
+        vip: [{t:"Lương tuần VIP", m:"Dạ lương VIP phát tự động vào 15h thứ 2 hàng tuần ạ."}],
+        dl: [{t:"Đăng ký đại lý", m:"Chào đối tác! Vui lòng để lại SĐT Telegram em tư vấn ạ."}],
+        xs: [{t:"Dự đoán AI", m:"AI HPOK đã chốt bộ số đẹp hôm nay, em gửi mình tham khảo ạ."}],
+        pl: [{t:"Chính sách bảo mật", m:"HPOK cam kết bảo mật 100% dữ liệu hội viên tại máy chủ."}],
+        sec: [{t:"Lỗi mã 2FA", m:"Dạ Anh/Chị gửi ảnh CCCD để em hỗ trợ xóa mã 2FA cũ ạ."}],
+        evt: [{t:"Sự kiện X2 nạp đầu", m:"Dạ nạp đầu qua Bank hôm nay nhận X2, mình tham gia nhé!"}],
+        bank: [{t:"Thêm ngân hàng mới", m:"Dạ tên thẻ phải trùng tên đăng ký mới có thể thêm ạ."}],
+        oth: [{t:"Hỗ trợ chung", m:"Dạ HPOK nghe ạ! Anh/Chị cần hỗ trợ vấn đề gì ạ?"}]
+    };
+
+    const staffs = [
+        {n: "Mai Phương", i: "https://i.pravatar.cc/100?u=mp"},
+        {n: "Bảo Ngọc", i: "https://i.pravatar.cc/100?u=bn"},
+        {n: "Linh Chi", i: "https://i.pravatar.cc/100?u=lc"}
+    ];
+
+    function animateValue(id, start, end, duration) {
+        let obj = document.getElementById(id);
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            obj.innerHTML = Math.floor(progress * (end - start) + start);
+            if (progress < 1) window.requestAnimationFrame(step);
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    function startLoad(key) {
+        document.getElementById('loadingBar').style.width = '100%';
+        setTimeout(() => {
+            document.getElementById('loadingBar').style.width = '0';
+            openS2(key);
+        }, 400);
+    }
+
+    function openS2(key) {
+        const list = document.getElementById('s2-list');
+        list.innerHTML = '';
+        (fullData[key] || [{t:"Hỗ trợ chung", m:"Dạ em nghe ạ"}]).forEach(item => {
+            const d = document.createElement('div');
+            d.className = 'detail-card';
+            d.innerHTML = `<b>${item.t}</b> <div class="chevron-circle"><i class="fa-solid fa-chevron-right"></i></div>`;
+            d.onclick = () => openChat(item);
+            list.appendChild(d);
+        });
+        switchScreen(2);
+    }
+
+    function openChat(obj) {
+        const s = staffs[Math.floor(Math.random()*staffs.length)];
+        document.getElementById('staffName').innerText = s.n + " (HPOK)";
+        document.getElementById('staffImg').src = s.i;
+        document.getElementById('chatBody').innerHTML = "";
+        switchScreen(3);
+        addMsg(obj.t, 'user');
+        setTimeout(() => addMsg(obj.m, 'bot'), 800);
+    }
+
+    function addMsg(txt, side) {
+        const b = document.getElementById('chatBody');
+        const d = document.createElement('div');
+        d.className = `msg msg-${side}`;
+        d.innerText = txt;
+        b.appendChild(d);
+        b.scrollTop = b.scrollHeight;
+    }
+
+    function sendMsg() {
+        const inp = document.getElementById('chatInput');
+        if(inp.value.trim()) { addMsg(inp.value, 'user'); inp.value = ''; }
+    }
+
+    function backTo(n) { switchScreen(n); }
+    function switchScreen(n) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('screen'+n).classList.add('active');
+        document.getElementById('mainFooter').style.display = (n === 3) ? 'none' : 'block';
+    }
+
+    window.onload = () => {
+        animateValue("countStaff", 0, 156, 1500);
+        setInterval(() => {
+            let next = currentStaff + (Math.floor(Math.random() * 5) - 2);
+            animateValue("countStaff", currentStaff, next, 800);
+            currentStaff = next;
+        }, 4000);
+    };
+</script>
+</body>
+</html>

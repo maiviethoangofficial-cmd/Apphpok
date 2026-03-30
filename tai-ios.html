@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+    <title>HPOK | CÀI ĐẶT IOS PRO</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;900&display=swap" rel="stylesheet">
+    <style>
+        /* 🛡️MVH|💎888NOW|🕒21/03/26|@LICENSE:HPOK */
+        :root { --p: #ff007f; --bg: #030303; --safe: #00ff88; --blue: #00d2ff; --card: rgba(255,255,255,0.05); }
+        body { margin: 0; font-family: 'Lexend', sans-serif; background: var(--bg); color: #fff; text-align: center; min-height: 100vh; padding-bottom: 50px; background-image: radial-gradient(circle at 50% 0%, #1a000d 0%, #030303 90%); overflow-x: hidden; }
+        .logo { width: 90px; height: 90px; background: linear-gradient(45deg, var(--p), #400); border-radius: 22px; display: flex; align-items: center; justify-content: center; font-size: 38px; font-weight: 900; margin: 40px auto 10px; box-shadow: 0 0 25px var(--p); border: 2px solid rgba(255,255,255,0.1); }
+        .container { width: 92%; max-width: 400px; margin: 0 auto; }
+        .btn-main { width: 100%; padding: 20px; border-radius: 25px; background: var(--p); color: #fff; border: none; font-weight: 900; font-size: 18px; box-shadow: 0 10px 20px rgba(255,0,127,0.3); margin-top: 20px; transition: 0.3s; cursor: pointer; }
+        .btn-main:active { transform: scale(0.95); }
+        
+        #pBox { display: none; background: var(--card); padding: 25px; border-radius: 25px; margin-top: 20px; border: 1px solid #1a1a1a; backdrop-filter: blur(10px); }
+        .p-bar { width: 100%; height: 10px; background: #000; border-radius: 10px; overflow: hidden; margin: 15px 0; border: 1px solid #222; }
+        .p-fill { width: 0%; height: 100%; background: linear-gradient(90deg, var(--p), #ff5e62); transition: 0.1s; box-shadow: 0 0 15px var(--p); }
+
+        #guide { display: none; margin-top: 30px; text-align: left; animation: fadeInUp 0.8s ease forwards; }
+        .step-card { background: var(--card); border: 1px solid #1a1a1a; border-radius: 20px; padding: 18px; margin-bottom: 15px; display: flex; align-items: flex-start; gap: 12px; }
+        .num { width: 28px; height: 28px; background: var(--p); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; flex-shrink: 0; font-size: 13px; }
+        .step-txt b { display: block; color: var(--blue); margin-bottom: 4px; font-size: 14px; }
+        .step-txt p { margin: 0; font-size: 12px; color: #888; line-height: 1.4; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div id="checkDevice" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh;">
+        <p>Đang kiểm tra cấu hình thiết bị...</p>
+    </div>
+
+    <div id="mainContent" style="display:none;">
+        <div class="logo">HP</div>
+        <div class="container" id="initUI">
+            <h2 style="margin:0; font-weight:900; font-size: 26px;">HỆ THỐNG IOS</h2>
+            <p style="font-size:11px; color:#555; letter-spacing: 1.5px; text-transform: uppercase;">Xác minh Apple Development</p>
+            <button class="btn-main" onclick="startInstall()">CÀI ĐẶT ỨNG DỤNG</button>
+        </div>
+
+        <div class="container">
+            <div id="pBox">
+                <b id="pMsg" style="color:#00d2ff; font-size:13px; text-transform: uppercase;">Đang kết nối Server Apple...</b>
+                <div class="p-bar"><div class="p-fill" id="pFill"></div></div>
+                <div id="pPer" style="font-size:11px; color:#666; font-weight: 900;">0%</div>
+            </div>
+
+            <div id="guide">
+                <div style="text-align: center; margin-bottom: 20px;"><b style="color:var(--p); font-size: 14px;">HƯỚNG DẪN KÍCH HOẠT</b></div>
+                <div class="step-card">
+                    <div class="num">1</div>
+                    <div class="step-txt">
+                        <b>Tải hồ sơ cấu hình</b>
+                        <p>Nhấn 'Cho phép' khi hệ thống yêu cầu tải cấu hình Apple Development.</p>
+                    </div>
+                </div>
+                <div class="step-card" style="border-color: var(--safe);">
+                    <div class="num" style="background: var(--safe); color: #000;">2</div>
+                    <div class="step-txt">
+                        <b>Cài đặt & Tin cậy</b>
+                        <p>Vào Cài đặt > VPN & Thiết bị > Chọn 'HPOK' > Nhấn Cài đặt ở góc trên.</p>
+                    </div>
+                </div>
+                <button class="btn-main" style="background:#111; border:1px solid #333; color: #888;" onclick="window.location.reload()">THỬ LẠI NẾU LỖI</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* 🛡️MVH|💎888NOW|🕒21/03/26|@LICENSE:HPOK */
+        
+        // Kiểm tra thiết bị iOS chuẩn
+        window.onload = function() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            if (isIOS) {
+                document.getElementById('checkDevice').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+            } else {
+                document.getElementById('checkDevice').innerHTML = " <h3 style='color:red;'>LỖI THIẾT BỊ</h3><p>Vui lòng truy cập bằng Safari trên iPhone/iPad.</p> ";
+            }
+        };
+
+        function startInstall() {
+            document.getElementById('initUI').style.display = 'none';
+            document.getElementById('pBox').style.display = 'block';
+            let per = 0;
+            const fill = document.getElementById('pFill');
+            const perTxt = document.getElementById('pPer');
+            const msg = document.getElementById('pMsg');
+
+            const iv = setInterval(() => {
+                per += 1;
+                fill.style.width = per + '%';
+                perTxt.innerText = per + '%';
+
+                if(per == 30) msg.innerText = "Đang tải cấu hình Apple...";
+                if(per == 70) msg.innerText = "Đang mã hóa profile...";
+                if(per == 90) msg.innerText = "Hoàn tất kiểm tra...";
+
+                if (per >= 100) {
+                    clearInterval(iv);
+                    // Dán link file .mobileconfig của bạn vào đây
+                    window.location.href = 'hpok.mobileconfig'; 
+                    setTimeout(() => {
+                        document.getElementById('pBox').style.display = 'none';
+                        document.getElementById('guide').style.display = 'block';
+                    }, 1000);
+                }
+            }, 30);
+        }
+    </script>
+</body>
+</html>
