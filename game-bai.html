@@ -157,12 +157,12 @@
 
     // Logic chơi game & Trừ tiền đồng bộ
     window.playGame = async (link) => {
-        if(currentBal < 100000) {
-            showAlert("Số dư không đủ 100.000₫ để vào bàn. Vui lòng nạp thêm!", "SỐ DƯ THẤP");
+        if(currentBal < 10000) {
+            showAlert("Số dư không đủ 10.000₫ để vào bàn. Vui lòng nạp thêm!", "SỐ DƯ THẤP");
             return;
         }
         // Trừ phí vào sảnh giống home.html
-        await update(ref(db, 'users/' + username), { balance: currentBal - 100000 });
+        await update(ref(db, 'users/' + username), { balance: currentBal - 10000 });
         
         // Chuyển hướng hoặc mở Iframe tùy bạn chọn (Dưới đây là mở Iframe như trang chủ)
         document.getElementById('gameFrame').src = link;
