@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TIẾN LÊN MIỀN NAM - HPOK ZINGPLAY PRO</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --gold: #ffcc00; --zing-green: #0e6b0e; --cyan: #00f2ff; 
+            --red: #ff3333; --border-table: #0a4d0a;
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        
+        body { 
+            background: #000; font-family: 'Lexend', sans-serif; 
+            width: 100vw; height: 100vh; overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        /* TỰ ĐỘNG XOAY NGANG MÀN HÌNH (FORCE LANDSCAPE) */
+        .game-wrapper {
+            position: absolute; width: 100vw; height: 100vh;
+            background: radial-gradient(circle, #0a3d0a 0%, #000 100%);
+            display: flex; justify-content: center; align-items: center;
+        }
+        @media screen and (orientation: portrait) {
+            .game-wrapper { width: 100vh; height: 100vw; transform: rotate(90deg); }
+        }
+
+        /* BÀN CHƠI THIẾT KẾ 3D OVAL */
+        .table-pro {
+            position: relative; width: 94%; height: 86%;
+            background: radial-gradient(circle, #1a8a1a 0%, #0e6b0e 100%);
+            border: 10px solid var(--border-table); border-radius: 400px;
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.8), 0 30px 60px rgba(0,0,0,0.9);
+            border-bottom: 20px solid #063306; /* Tạo độ dày mặt bàn */
+        }
+
+        #tableCenter {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -60%);
+            width: 400px; height: 200px; display: flex; justify-content: center; align-items: center; z-index: 10;
+        }
+
+        /* NGƯỜI CHƠI - KHUNG AVATAR VIP */
+        .player { position: absolute; z-index: 100; text-align: center; width: 120px; transition: 0.3s; }
+        .avt-container {
+            width: 70px; height: 70px; margin: 0 auto;
+            position: relative; border-radius: 15px;
+            border: 3px solid var(--gold); background: #111;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        .player.active .avt-container {
+            border-color: var(--cyan); box-shadow: 0 0 25px var(--cyan); transform: scale(1.1);
+        }
+        .avt-container img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
+
+        /* Số lá bài Bot còn lại */
+        .card-left-badge {
+            position: absolute; top: -12px; right: -12px;
+            background: linear-gradient(#ff5f6d, #ff3131);
+            color: #fff; font-size: 14px; font-weight: 900;
+            width: 32px; height: 32px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            border: 2px solid #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+
+        .info-panel {
+            background: rgba(0,0,0,0.85); border: 1px solid #333;
+            border-radius: 8px; padding: 4px; margin-top: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .p-name { font-size: 10px; font-weight: 900; color: #fff; white-space: nowrap; overflow: hidden; text-transform: uppercase; }
+        .p-money { font-size: 11px; color: var(--gold); font-weight: bold; }
+
+        /* Tọa độ các vị trí */
+        .p-me { bottom: 25px; left: 45px; display: flex; align-items: flex-end; gap: 20px; width: auto; }
+        .p1 { left: 40px; top: 40%; }
+        .p2 { top: 20px; left: 50%; transform: translateX(-50%); }
+        .p3 { right: 40px; top: 40%; }
+
+        /* LÁ BÀI */
+        .card {
+            width: 62px; height: 88px; background: #fff; border-radius: 8px;
+            border: 1px solid #ddd; color: #000; font-weight: 900; padding: 6px;
+            display: flex; flex-direction: column; box-shadow: 3px 3px 10px rgba(0,0,0,0.5);
+            position: relative; transition: 0.25s ease-out;
+        }
+        .card.red { color: var(--red); }
+        .card .suit { align-self: center; font-size: 36px; margin-top: -5px; }
+
+        .my-hand { position: absolute; bottom: 35px; left: 55%; transform: translateX(-50%); display: flex; z-index: 200; }
+        .my-hand .card { margin-left: -35px; cursor: pointer; }
+        .my-hand .card:hover, .my-hand .card.selected { transform: translateY(-45px); border: 2px solid var(--cyan); box-shadow: 0 0 25px var(--cyan); }
+
+        .on-table { position: absolute; transform: scale(0.95); }
+
+        /* NÚT THAO TÁC */
+        .btn-group { position: absolute; bottom: 40px; right: 40px; display: flex; gap: 15px; z-index: 300; }
+        .btn-zing {
+            background: linear-gradient(to bottom, #ffcc00, #ff9900);
+            border: none; padding: 16px 35px; border-radius: 50px;
+            color: #fff; font-weight: 900; text-shadow: 1px 1px 2px #000;
+            box-shadow: 0 5px 0 #995500; cursor: pointer; font-size: 16px;
+        }
+        .btn-zing:active { transform: translateY(3px); box-shadow: 0 2px 0 #995500; }
+        .btn-zing:disabled { background: #444; box-shadow: 0 5px 0 #222; opacity: 0.6; pointer-events: none; }
+
+        #msgBox { 
+            position: absolute; top: 25%; left: 50%; transform: translateX(-50%);
+            font-size: 28px; font-weight: 900; color: var(--gold);
+            text-shadow: 0 0 15px #000, 0 0 5px #fff; z-index: 500;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-wrapper">
+    <div id="msgBox">HPOK GAME ĐANG TẢI...</div>
+
+    <div class="table-pro">
+        <div id="tableCenter"></div>
+
+        <div class="player p1" id="p1">
+            <div class="avt-container">
+                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=HP1">
+                <div class="card-left-badge" id="bc1">13</div>
+            </div>
+            <div class="info-panel"><div class="p-name">IT HOÀNG HP</div><div class="p-money">50M₫</div></div>
+        </div>
+
+        <div class="player p2" id="p2">
+            <div class="avt-container">
+                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=HP2">
+                <div class="card-left-badge" id="bc2">13</div>
+            </div>
+            <div class="info-panel"><div class="p-name">ĐẠI GIA ĐẤT CẢNG</div><div class="p-money">9.9B₫</div></div>
+        </div>
+
+        <div class="player p3" id="p3">
+            <div class="avt-container">
+                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=HP3">
+                <div class="card-left-badge" id="bc3">13</div>
+            </div>
+            <div class="info-panel"><div class="p-name">HOÀNG PRO</div><div class="p-money">125M₫</div></div>
+        </div>
+    </div>
+
+    <div class="player p-me active" id="p0">
+        <div class="avt-container" style="border-color: var(--cyan); width: 85px; height: 85px;">
+            <img id="myAvt" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Felix">
+        </div>
+        <div class="info-panel" style="min-width: 140px;">
+            <div class="p-name" id="myName">...</div>
+            <div class="p-money" id="myBalance">0₫</div>
+        </div>
+    </div>
+
+    <div class="my-hand" id="myHand"></div>
+
+    <div class="btn-group">
+        <button class="btn-zing" style="background:#555; box-shadow: 0 5px 0 #222;" onclick="location.reload()">THOÁT</button>
+        <button class="btn-zing" id="btnPlay" onclick="handlePlay()">ĐÁNH BÀI</button>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBD27MYenkjWOEjqj0hCisbh_61F_6bhSE",
+        databaseURL: "https://hpok-d355c-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "hpok-d355c"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const user = localStorage.getItem("username");
+
+    let currentTurn = 0; // 0: Me, 1, 2, 3: Bots
+    let botCards = [0, 13, 13, 13];
+    let userBal = 0;
+
+    // --- 1. ĐỒNG BỘ DỮ LIỆU TỪ FIREBASE CỦA BẠN ---
+    if(user) {
+        onValue(ref(db, 'users/' + user), (snap) => {
+            if(snap.exists()){
+                const d = snap.val();
+                userBal = d.balance || 0;
+                document.getElementById('myBalance').innerText = userBal.toLocaleString() + "₫";
+                document.getElementById('myName').innerText = (d.fullName || user).toUpperCase();
+                document.getElementById('myAvt').src = (d.gender === "Nữ") ? "https://api.dicebear.com/7.x/adventurer/svg?seed=Aneka" : "https://api.dicebear.com/7.x/adventurer/svg?seed=Felix";
+            }
+        });
+    }
+
+    const suits = [{s:'♠',r:false},{s:'♣',r:false},{s:'♦',r:true},{s:'♥',r:true}];
+    const vals = ['3','4','5','6','7','8','9','10','J','Q','K','A','2'];
+
+    // --- 2. CHIA BÀI ---
+    function deal() {
+        const h = document.getElementById('myHand');
+        h.innerHTML = '';
+        for(let i=0; i<13; i++) {
+            const v = vals[Math.floor(Math.random()*vals.length)];
+            const s = suits[Math.floor(Math.random()*4)];
+            const div = document.createElement('div');
+            div.className = `card ${s.r ? 'red' : ''}`;
+            div.innerHTML = `<div>${v}</div><div class="suit">${s.s}</div>`;
+            div.onclick = () => { if(currentTurn === 0) div.classList.toggle('selected'); };
+            h.appendChild(div);
+        }
+        document.getElementById('msgBox').innerText = "ĐẾN LƯỢT BẠN";
+    }
+
+    // --- 3. ĐƯA BÀI RA GIỮA BÀN ---
+    function pushToTable(cards) {
+        const center = document.getElementById('tableCenter');
+        center.innerHTML = ''; // Dọn bài cũ
+        cards.forEach((c, i) => {
+            const div = document.createElement('div');
+            div.className = `card on-table ${c.r ? 'red' : ''}`;
+            div.innerHTML = `<div>${c.v}</div><div class="suit">${c.s}</div>`;
+            const rot = (Math.random() * 30) - 15;
+            div.style.transform = `rotate(${rot}deg) translateX(${i*20}px)`;
+            center.appendChild(div);
+        });
+    }
+
+    // --- 4. VÒNG LẶP LƯỢT CHƠI BOT ---
+    async function nextPlayer() {
+        document.querySelectorAll('.player').forEach(p => p.classList.remove('active'));
+        currentTurn = (currentTurn + 1) % 4;
+        document.getElementById(`p${currentTurn}`).classList.add('active');
+        document.getElementById('btnPlay').disabled = (currentTurn !== 0);
+
+        if(currentTurn !== 0) {
+            document.getElementById('msgBox').innerText = `BOT ${currentTurn} ĐANG ĐÁNH...`;
+            setTimeout(() => {
+                const num = Math.floor(Math.random() * 2) + 1;
+                botCards[currentTurn] = Math.max(0, botCards[currentTurn] - num);
+                document.getElementById(`bc${currentTurn}`).innerText = botCards[currentTurn];
+
+                const played = [];
+                for(let i=0; i<num; i++) {
+                    played.push({v: vals[Math.floor(Math.random()*13)], s: suits[Math.floor(Math.random()*4)].s, r: Math.random()>0.5});
+                }
+                pushToTable(played);
+
+                if(botCards[currentTurn] === 0) {
+                    document.getElementById('msgBox').innerText = `BOT ${currentTurn} ĐÃ THẮNG!`;
+                } else {
+                    setTimeout(nextPlayer, 2000);
+                }
+            }, 2000);
+        } else {
+            document.getElementById('msgBox').innerText = "ĐẾN LƯỢT BẠN";
+        }
+    }
+
+    // --- 5. BẠN ĐÁNH BÀI ---
+    window.handlePlay = async () => {
+        if(currentTurn !== 0) return;
+        const sel = document.querySelectorAll('.card.selected');
+        if(sel.length === 0) return;
+
+        const myPlayed = [];
+        sel.forEach(el => {
+            myPlayed.push({ v: el.children[0].innerText, s: el.children[1].innerText, r: el.classList.contains('red') });
+            el.remove();
+        });
+        pushToTable(myPlayed);
+
+        // CỘNG THƯỞNG 50.000₫ VÀO FIREBASE KHI ĐÁNH
+        if(user) {
+            const refU = ref(db, 'users/' + user);
+            await update(refU, { balance: userBal + 50000 });
+        }
+
+        nextPlayer();
+    };
+
+    // Bắt đầu game
+    setTimeout(() => {
+        document.getElementById('msgBox').innerText = "ĐANG CHIA BÀI...";
+        setTimeout(deal, 1500);
+    }, 1000);
+
+</script>
+</body>
+</html>
