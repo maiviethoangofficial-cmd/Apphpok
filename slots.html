@@ -1,0 +1,36 @@
+<div class="slot-balance-box" style="color: gold; font-weight: bold; text-align: center;">
+    SỐ DƯ: <span id="slot-real-balance">0</span> ₫
+</div>
+
+<script type="module">
+    import { db, ref, onValue, update } from "./firebase-config.js";
+
+    // Lấy user từ URL do home.html truyền sang
+    const params = new URLSearchParams(window.location.search);
+    const user = params.get('user');
+
+    if (user) {
+        // Lấy số dư trực tiếp từ Firebase (Đồng bộ tuyệt đối)
+        onValue(ref(db, `users/${user}`), (snap) => {
+            if (snap.exists()) {
+                const bal = snap.val().balance || 0;
+                document.getElementById('slot-real-balance').innerText = bal.toLocaleString();
+                window.playerBalance = bal; // Lưu vào biến để dùng khi quay (spin)
+            }
+        });
+    }
+
+    // Hàm khi người dùng nhấn nút Quay (Spin)
+    window.spinGame = async (cuoc) => {
+        if (window.playerBalance < cuoc) {
+            alert("Số dư không đủ để quay!");
+            return;
+        }
+        
+        // Trừ tiền trên Firebase ngay khi quay
+        const newBalance = window.playerBalance - cuoc;
+        await update(ref(db, `users/${user}`), { balance: newBalance });
+        
+        // Chạy hiệu ứng quay ở đây...
+    };
+</script>
