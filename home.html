@@ -345,28 +345,35 @@
     <a href="taikhoan.html" class="nav-item"><i class="fa-solid fa-circle-user"></i>Cá nhân</a>
 </div>
 
+// --- ĐOẠN MÃ THAY THẾ TRONG HOME.HTML ---
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { db, ref, onValue } from "./firebase-config.js"; // Đảm bảo bạn đã có file này
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyBD27MYenkjWOEjqj0hCisbh_61F_6bhSE",
-        authDomain: "hpok-d355c.firebaseapp.com",
-        databaseURL: "https://hpok-d355c-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "hpok-d355c"
-    };
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    const username = localStorage.getItem("username");
     let currentBal = 0;
 
-    // POPUP CUSTOM LOGIC
-    window.showAlert = (msg, title = "THÔNG BÁO") => {
-        document.getElementById('alertMsg').innerText = msg;
-        document.getElementById('alertTitle').innerText = title;
-        document.getElementById('customAlert').style.display = 'flex';
-    };
-    window.closeAlert = () => document.getElementById('customAlert').style.display = 'none';
+    // 1. Đồng bộ số dư Real-time tại Home
+    if(username) {
+        onValue(ref(db, 'users/' + username), (snap) => {
+            if (snap.exists()) {
+                const data = snap.val();
+                currentBal = data.balance || 0;
+                document.getElementById('uBalance').innerText = currentBal.toLocaleString() + " ₫";
+            }
+        });
+    }
 
+    // 2. Hàm vào game: BỎ CHẶN 100K & TRUYỀN USERNAME
+    window.play = (url) => {
+        if(!username) return window.location.href = 'login.html';
+        
+        // Không trừ 100k ở đây nữa, để game tự xử lý đặt cược
+        // Truyền username qua URL để file game nhận diện
+        const gameUrlWithParams = `${url}?user=${username}`;
+        
+        document.getElementById('gameFrame').src = gameUrlWithParams;
+        document.getElementById('gameArea').style.display = 'block';
+    };
     // FULL 16 GAME LIST
     const games = [
         { l: "mahjongways", i: "17Yeaf-mcBIaWZi2VNg6nMsdNSSdUR-0-" },
@@ -402,24 +409,6 @@
                 document.getElementById('uBalance').innerText = currentBal.toLocaleString() + " ₫";
                 document.getElementById('uID').innerText = "MÃ ID: " + (data.uid_permanent || "---");
             }
-        });
-    }
-
-    window.play = async (url) => {
-        if(currentBal < 100000) {
-            showAlert("Số dư của bạn không đủ 100.000₫ để vào sảnh. Vui lòng nạp thêm!", "SỐ DƯ THẤP");
-            return;
-        }
-        await update(ref(db, 'users/' + username), { balance: currentBal - 100000 });
-        document.getElementById('gameFrame').src = url;
-        document.getElementById('gameArea').style.display = 'block';
-    };
-
-    window.closeGame = () => { document.getElementById('gameArea').style.display = 'none'; document.getElementById('gameFrame').src = ''; };
-
-    setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleTimeString('vi-VN'); }, 1000);
-    let cur = 0;
-    setInterval(() => { cur = (cur + 1) % 2; document.getElementById('slides').style.transform = `translateX(-${cur * 100}%)`; }, 5000);
 </script>
     <script src="loader.js"></script>
 
