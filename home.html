@@ -345,35 +345,28 @@
     <a href="taikhoan.html" class="nav-item"><i class="fa-solid fa-circle-user"></i>Cá nhân</a>
 </div>
 
-// --- ĐOẠN MÃ THAY THẾ TRONG HOME.HTML ---
 <script type="module">
-    import { db, ref, onValue } from "./firebase-config.js"; // Đảm bảo bạn đã có file này
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    const username = localStorage.getItem("username");
+    const firebaseConfig = {
+        apiKey: "AIzaSyBD27MYenkjWOEjqj0hCisbh_61F_6bhSE",
+        authDomain: "hpok-d355c.firebaseapp.com",
+        databaseURL: "https://hpok-d355c-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "hpok-d355c"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
     let currentBal = 0;
 
-    // 1. Đồng bộ số dư Real-time tại Home
-    if(username) {
-        onValue(ref(db, 'users/' + username), (snap) => {
-            if (snap.exists()) {
-                const data = snap.val();
-                currentBal = data.balance || 0;
-                document.getElementById('uBalance').innerText = currentBal.toLocaleString() + " ₫";
-            }
-        });
-    }
-
-    // 2. Hàm vào game: BỎ CHẶN 100K & TRUYỀN USERNAME
-    window.play = (url) => {
-        if(!username) return window.location.href = 'login.html';
-        
-        // Không trừ 100k ở đây nữa, để game tự xử lý đặt cược
-        // Truyền username qua URL để file game nhận diện
-        const gameUrlWithParams = `${url}?user=${username}`;
-        
-        document.getElementById('gameFrame').src = gameUrlWithParams;
-        document.getElementById('gameArea').style.display = 'block';
+    // POPUP CUSTOM LOGIC
+    window.showAlert = (msg, title = "THÔNG BÁO") => {
+        document.getElementById('alertMsg').innerText = msg;
+        document.getElementById('alertTitle').innerText = title;
+        document.getElementById('customAlert').style.display = 'flex';
     };
+    window.closeAlert = () => document.getElementById('customAlert').style.display = 'none';
+
     // FULL 16 GAME LIST
     const games = [
         { l: "mahjongways", i: "17Yeaf-mcBIaWZi2VNg6nMsdNSSdUR-0-" },
@@ -409,21 +402,32 @@
                 document.getElementById('uBalance').innerText = currentBal.toLocaleString() + " ₫";
                 document.getElementById('uID').innerText = "MÃ ID: " + (data.uid_permanent || "---");
             }
-</script>
-    <script src="loader.js"></script>
-
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    </head>
-<body style="background-color: #0c0e12; color: white;">
+        });
+    }
     
-    <div class="main-content">
-        <h1>Chào mừng đến HPOK OFFICIAL</h1>
-        <p>Phiên bản: 2.0 PRO</p>
-        </div>
+// Tìm và thay thế hàm window.play cũ bằng đoạn mã này
+window.play = (url) => {
+    if (!username) {
+        showAlert("Vui lòng đăng nhập để chơi game!", "THÔNG BÁO");
+        return;
+    }
 
-    <script src="app.js"></script>
-    <script src="auto-handler.js"></script>
-    <script src="app-core.js"></script>
-    <script src="music.js"></script>
+    // Đồng bộ số dư vào URL game (nếu sảnh game hỗ trợ nhận tham số balance)
+    // Ví dụ: https://nagaimam.xyz/pgsoft/luckyneko?balance=50000
+    const gameUrlWithBalance = `${url}?balance=${currentBal}&user=${username}`;
+    
+    document.getElementById('gameFrame').src = gameUrlWithBalance;
+    document.getElementById('gameArea').style.display = 'block';
+    
+    // Bắt đầu đếm giờ chơi hoặc các logic khác nếu cần
+    console.log(`Đang vào game với số dư: ${currentBal}₫`);
+};
+
+    window.closeGame = () => { document.getElementById('gameArea').style.display = 'none'; document.getElementById('gameFrame').src = ''; };
+
+    setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleTimeString('vi-VN'); }, 1000);
+    let cur = 0;
+    setInterval(() => { cur = (cur + 1) % 2; document.getElementById('slides').style.transform = `translateX(-${cur * 100}%)`; }, 5000);
+</script>
 </body>
 </html>
