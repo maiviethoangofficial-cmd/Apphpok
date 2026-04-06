@@ -334,100 +334,46 @@
     </div>
 </div>
 
-<div class="section-title">SẢNH GAME <span>CASINO HPOK</span></div>
-
-<div class="game-grid" id="gameContainer"></div>
-
-<div class="footer-nav">
-    <a href="home.html" class="nav-item active"><i class="fa-solid fa-house"></i>Trang chủ</a>
-    <a href="naptien.html" class="nav-item"><i class="fa-solid fa-wallet"></i>Nạp tiền</a>
-    <a href="khuyenmai.html" class="nav-item"><i class="fa-solid fa-gift"></i>Ưu đãi</a>
-    <a href="taikhoan.html" class="nav-item"><i class="fa-solid fa-circle-user"></i>Cá nhân</a>
-</div>
-
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { db, ref, onValue } from "./firebase-config.js"; // Đảm bảo bạn đã export db từ config
+    import { games } from "./slot-data.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyBD27MYenkjWOEjqj0hCisbh_61F_6bhSE",
-        authDomain: "hpok-d355c.firebaseapp.com",
-        databaseURL: "https://hpok-d355c-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "hpok-d355c"
-    };
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    let currentBal = 0;
-
-    // POPUP CUSTOM LOGIC
-    window.showAlert = (msg, title = "THÔNG BÁO") => {
-        document.getElementById('alertMsg').innerText = msg;
-        document.getElementById('alertTitle').innerText = title;
-        document.getElementById('customAlert').style.display = 'flex';
-    };
-    window.closeAlert = () => document.getElementById('customAlert').style.display = 'none';
-
-    // FULL 16 GAME LIST
-    const games = [
-        { l: "mahjongways", i: "17Yeaf-mcBIaWZi2VNg6nMsdNSSdUR-0-" },
-        { l: "mahjongways2", i: "1U_lNSHEtpsFRx1beq53LUzUqzYi4Nz5J" },
-        { l: "treasuresofaztec", i: "10pkvs_IbdqmprzgIhRObUteHKYaRmAXb" },
-        { l: "mahjongwins2", i: "1U_lNSHEtpsFRx1beq53LUzUqzYi4Nz5J" },
-        { l: "wildbountyshowdown", i: "10pkvs_IbdqmprzgIhRObUteHKYaRmAXb" },
-        { l: "luckyneko", i: "1L44JEYCaDpj_avYPeEok4oyFuNkDmb-Y" },
-        { l: "fortunerabbit", i: "11upSq5AZD8__-dD8S9tiGJqgrEC068Zc" },
-        { l: "fortunetiger", i: "1j7TU3afS_jd0ZVTKmVrFD_mbgHGomsFk" },
-        { l: "caishenwins", i: "13MM0fIMqonGWX0jYKU7hXJWDnxAHW1GQ" },
-        { l: "songkransplash", i: "1aB3f8qwzzJC0Z-AMpbCO06p5txSm0K-W" },
-        { l: "mythicalsand", i: "1PhnzOLzPvSJTQAL_tl4kt7im9rNI9uha" },
-        { l: "zeusvstyphon", i: "1BLK3DVo_a8hwDgzO6jomEz9UenLVvtlI" },
-        { l: "gatesofolympus1000", i: "1hL3OEUrnOaGfMlDRJyl1G2WwXfovPL44" },
-        { l: "mahjongwinsgongxifacai", i: "1FjM7jh7EJ0q2RP4jc22d8fOtJfDLDJNC" },
-        { l: "supergolfdrive", i: "11rBe_tZxJaKE4NAbezeHIkQR9ogpvnB3" },
-        { l: "knockoutriches", i: "1Bqxzp2n5qbj5rgvjhc0a1CUbhds1J-d8" }
-    ];
-
+    // --- HIỂN THỊ DANH SÁCH GAME ---
     const container = document.getElementById('gameContainer');
-    games.forEach(g => {
-        container.innerHTML += `<div class="game-item" onclick="play('https://nagaimam.xyz/pgsoft/${g.l}')"><div class="hot-tag">HOT</div><img src="https://drive.google.com/thumbnail?id=${g.i}&sz=w1000"></div>`;
-    });
+    if (container) {
+        // Sử dụng .map().join('') nhanh hơn rất nhiều so với forEach +=
+        container.innerHTML = games.map(g => `
+            <div class="game-item" onclick="play('https://nagaimam.xyz/pgsoft/${g.l}')">
+                <div class="hot-tag">HOT</div>
+                <img src="https://drive.google.com/thumbnail?id=${g.i}&sz=w1000" loading="lazy">
+            </div>
+        `).join('');
+    }
 
+    // --- ĐỒNG BỘ THÔNG TIN TÀI KHOẢN ---
     const username = localStorage.getItem("username");
-    if(username) {
-        onValue(ref(db, 'users/' + username), (snap) => {
+    if (username) {
+        onValue(ref(db, `users/${username}`), (snap) => {
             if (snap.exists()) {
                 const data = snap.val();
-                document.getElementById('uName').innerText = data.fullName;
-                currentBal = data.balance || 0;
-                document.getElementById('uBalance').innerText = currentBal.toLocaleString() + " ₫";
-                document.getElementById('uID').innerText = "MÃ ID: " + (data.uid_permanent || "---");
+                
+                // Cập nhật giao diện an toàn (kiểm tra phần tử tồn tại trước khi set)
+                const elements = {
+                    'uName': data.fullName,
+                    'uBalance': (data.balance || 0).toLocaleString() + " ₫",
+                    'uID': "MÃ ID: " + (data.uid_permanent || "---")
+                };
+
+                for (let id in elements) {
+                    const el = document.getElementById(id);
+                    if (el) el.innerText = elements[id];
+                }
+                
+                // Cập nhật số dư vào biến toàn cục để chơi game
+                window.currentBal = data.balance || 0;
             }
         });
     }
-    
-// Tìm và thay thế hàm window.play cũ bằng đoạn mã này
-window.play = (url) => {
-    if (!username) {
-        showAlert("Vui lòng đăng nhập để chơi game!", "THÔNG BÁO");
-        return;
-    }
-
-    // Đồng bộ số dư vào URL game (nếu sảnh game hỗ trợ nhận tham số balance)
-    // Ví dụ: https://nagaimam.xyz/pgsoft/luckyneko?balance=50000
-    const gameUrlWithBalance = `${url}?balance=${currentBal}&user=${username}`;
-    
-    document.getElementById('gameFrame').src = gameUrlWithBalance;
-    document.getElementById('gameArea').style.display = 'block';
-    
-    // Bắt đầu đếm giờ chơi hoặc các logic khác nếu cần
-    console.log(`Đang vào game với số dư: ${currentBal}₫`);
-};
-
-    window.closeGame = () => { document.getElementById('gameArea').style.display = 'none'; document.getElementById('gameFrame').src = ''; };
-
-    setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleTimeString('vi-VN'); }, 1000);
-    let cur = 0;
-    setInterval(() => { cur = (cur + 1) % 2; document.getElementById('slides').style.transform = `translateX(-${cur * 100}%)`; }, 5000);
 </script>
 </body>
 </html>
